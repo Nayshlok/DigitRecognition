@@ -6,25 +6,32 @@ using System.Threading.Tasks;
 
 namespace DigitRecognitionConsole.Model
 {
-    public abstract class NodeBase
+    public abstract class BaseNode
     {
-        protected static readonly double LEARNING_RATE = 0.2;
+        protected static readonly double LEARNING_RATE = 2;
 
         public string Name { get; set; }
 
         public List<NetConnection> Outputs { get; set; }
+        public double Activation { get; set; }
+        public double Error { get; set; }
 
-        public NodeBase()
+        public BaseNode()
         {
             Outputs = new List<NetConnection>();
         }
 
-        public void AddConnection(LayerNode node)
+        public void AddConnection(ActivatingNode node)
         {
             NetConnection connection = new NetConnection(this, node);
             
             Outputs.Add(connection);
             node.Inputs.Add(connection);
+        }
+
+        public double GetActivation()
+        {
+            return Activation;
         }
 
         public abstract double Activate();

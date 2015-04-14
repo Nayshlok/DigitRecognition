@@ -11,13 +11,13 @@ namespace DigitRecognitionConsole.Model
         public string Name { get; set; }
 
         private static Random rand = new Random();
-        public NodeBase Sender { get; set; }
-        public NodeBase Receiver { get; set; }
+        public BaseNode Sender { get; set; }
+        public BaseNode Receiver { get; set; }
         public double Weight { get; set; }
-        public double Activation { get; set; }
-        public double Error { get; set; }
+        //public double Activation { get; set; }
+        //public double Error { get; set; }
 
-        public NetConnection(NodeBase Sender, NodeBase Receiver)
+        public NetConnection(BaseNode Sender, BaseNode Receiver)
         {
             this.Sender = Sender;
             this.Receiver = Receiver;
@@ -27,7 +27,7 @@ namespace DigitRecognitionConsole.Model
 
         public override string ToString()
         {
-            return Sender.Name + " to " + Receiver.Name + "; W = " + Math.Round(Weight, 7) + ", A = " + Math.Round(Activation, 7) + ", E = " + Math.Round(Error, 7);
+            return Sender.Name + " to " + Receiver.Name + "; W = " + Math.Round(Weight, 7);
         }
 
     }

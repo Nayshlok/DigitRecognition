@@ -24,14 +24,15 @@ namespace DigitRecognitionConsole.Controller
                 throw new Exception("You must have outputs");
             }
             bias = new BiasNode();
+            bias.Name = "B";
             inputNodes = new InputNode[inputs];
-            LayerNode[] Layer1 = new LayerNode[inputNodes.Length];
+            HiddenNode[] Layer1 = new HiddenNode[inputNodes.Length];
             for (int i = 0; i < inputNodes.Length; i++)
             {
                 inputNodes[i] = new InputNode { Name="I" + i };
-                Layer1[i] = new LayerNode { Name="L" + i };
+                Layer1[i] = new HiddenNode { Name="L" + i };
             }
-            Layer1[Layer1.Length - 1] = new LayerNode { Name="L" + (Layer1.Length - 1) };
+            Layer1[Layer1.Length - 1] = new HiddenNode { Name="L" + (Layer1.Length - 1) };
             outputNodes = new OutputNode[outputs.Length];
             for (int i = 0; i < outputNodes.Length; i++)
             {
@@ -43,22 +44,22 @@ namespace DigitRecognitionConsole.Controller
 
         }
 
-        private void EstablishConnections(NodeBase[] SendingNodes, LayerNode[] ReceivingNodes)
+        private void EstablishConnections(BaseNode[] SendingNodes, ActivatingNode[] ReceivingNodes)
         {
-            foreach (NodeBase sn in SendingNodes)
+            foreach (BaseNode sn in SendingNodes)
             {
-                foreach (LayerNode rn in ReceivingNodes)
+                foreach (ActivatingNode rn in ReceivingNodes)
                 {
                     sn.AddConnection(rn);
                 }
             }
-            foreach (LayerNode n in ReceivingNodes)
+            foreach (ActivatingNode n in ReceivingNodes)
             {
                 bias.AddConnection(n);
             }
         }
 
-        public double judgeInput(byte[] data)
+        public OutputNode judgeInput(byte[] data)
         {
             if (data.Length != inputNodes.Length)
             {
@@ -70,7 +71,7 @@ namespace DigitRecognitionConsole.Controller
                 inputNodes[i].inputValue = data[i];
                 inputNodes[i].Activate();
             }
-            NodeBase nextLayer = inputNodes[0];
+            BaseNode nextLayer = inputNodes[0];
             while (nextLayer != null)
             {
                 nextLayer = ActivateNextLayer(nextLayer);
@@ -89,8 +90,7 @@ namespace DigitRecognitionConsole.Controller
 
 
             }
-            
-            return Selected.OutputValue;
+            return Selected;
         }
 
         public void TrainNetwork(DataItem Item)
@@ -105,7 +105,7 @@ namespace DigitRecognitionConsole.Controller
                 inputNodes[i].inputValue = Item.data[i];
                 inputNodes[i].Activate();
             }
-            NodeBase nextLayer = inputNodes[0];
+            BaseNode nextLayer = inputNodes[0];
             while (nextLayer != null)
             {
                 nextLayer = ActivateNextLayer(nextLayer);
@@ -115,7 +115,7 @@ namespace DigitRecognitionConsole.Controller
                 int target = n.OutputValue == Item.expectedResult ? 1 : 0;
                 n.AdjustWeights(target);
             }
-            NodeBase prevLayer = outputNodes[0];
+            BaseNode prevLayer = outputNodes[0];
             while (prevLayer != null)
             {
                 prevLayer = AdjustPreviousWeight(prevLayer);
@@ -123,7 +123,7 @@ namespace DigitRecognitionConsole.Controller
 
         }
 
-        public NodeBase ActivateNextLayer(NodeBase node)
+        public BaseNode ActivateNextLayer(BaseNode node)
         {
             foreach (NetConnection nc in node.Outputs)
             {
@@ -134,17 +134,17 @@ namespace DigitRecognitionConsole.Controller
             return node.Outputs.Count == 0 ? null: node.Outputs[0].Receiver;
         }
 
-        public NodeBase AdjustPreviousWeight(NodeBase startNode)
+        public BaseNode AdjustPreviousWeight(BaseNode startNode)
         {
-            NodeBase PrevNode = null;
-            if (startNode is LayerNode)
+            BaseNode PrevNode = null;
+            if (startNode is ActivatingNode)
             {
-                LayerNode currentNode = (LayerNode)startNode;
+                ActivatingNode currentNode = (ActivatingNode)startNode;
                 foreach (NetConnection nc in currentNode.Inputs)
                 {
-                    if (nc.Sender is LayerNode)
+                    if (nc.Sender is HiddenNode)
                     {
-                        LayerNode temp = (LayerNode)nc.Sender;
+                        HiddenNode temp = (HiddenNode)nc.Sender;
                         temp.AdjustWeights();
                     }
                 }

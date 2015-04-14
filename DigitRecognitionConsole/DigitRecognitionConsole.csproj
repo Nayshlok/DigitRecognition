@@ -46,12 +46,13 @@
     <Compile Include="Controller\DigitDataReader.cs" />
     <Compile Include="Controller\IDataProvider.cs" />
     <Compile Include="Controller\NeuralNet.cs" />
+    <Compile Include="Model\Node\ActivatingNode.cs" />
     <Compile Include="Model\Node\BiasNode.cs" />
     <Compile Include="Model\DataItem.cs" />
-    <Compile Include="Model\Node\NodeBase.cs" />
+    <Compile Include="Model\Node\BaseNode.cs" />
     <Compile Include="Model\Node\InputNode.cs" />
     <Compile Include="Model\NetConnection.cs" />
-    <Compile Include="Model\Node\LayerNode.cs" />
+    <Compile Include="Model\Node\HiddenNode.cs" />
     <Compile Include="Model\Node\OutputNode.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

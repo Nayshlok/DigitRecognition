@@ -69,34 +69,42 @@ namespace DigitRecognitionConsole
                 pointer = pointer >= possibles.Length - 1 ? 0 : pointer + 1;
             }
             PrintAllWeights(net2);
-            Console.WriteLine("Testing 1, 1 received " + net2.judgeInput(new byte[] { 1, 1}));
-            Console.WriteLine("Testing 0, 1 received " + net2.judgeInput(new byte[] { 0, 1 }));
-            Console.WriteLine("Testing 1, 0 received " + net2.judgeInput(new byte[] { 1, 0 }));
-            Console.WriteLine("Testing 0, 0 received " + net2.judgeInput(new byte[] { 0, 0 }));
-            PrintAllWeights(net2);
+            OutputNode TestResult = net2.judgeInput(new byte[] { 1, 1});
+            Console.WriteLine("Testing 1, 1 received " + TestResult + ", Current error: " + TestResult.CalculateError(0));
+            TestResult = net2.judgeInput(new byte[] { 0, 1 });
+            Console.WriteLine("Testing 0, 1 received " + TestResult);
+            TestResult = net2.judgeInput(new byte[] { 1, 0 });
+            Console.WriteLine("Testing 1, 0 received " + TestResult);
+            TestResult = net2.judgeInput(new byte[] { 0, 0 });
+            Console.WriteLine("Testing 0, 0 received " + TestResult);
+            //PrintAllWeights(net2);
 
         }
 
         public static void PrintAllWeights(NeuralNet net)
         {
             Console.WriteLine();
-            foreach (NodeBase n in net.inputNodes)
+            foreach (OutputNode n in net.outputNodes)
             {
-                foreach (NetConnection nc in n.Outputs)
+                foreach (NetConnection nc in n.Inputs)
                 {
                     Console.WriteLine(nc);
                 }
             }
-            foreach (NetConnection n in net.inputNodes[0].Outputs)
+            foreach (NetConnection n in net.outputNodes[0].Inputs)
             {
-                foreach (NetConnection nc in n.Receiver.Outputs)
+                if (n.Sender is ActivatingNode)
                 {
-                    Console.WriteLine(nc);
+                    ActivatingNode an = n.Sender as ActivatingNode;
+                    foreach (NetConnection nc in an.Inputs)
+                    {
+                        Console.WriteLine(nc);
+                    }
                 }
             }
             foreach (OutputNode o in net.outputNodes)
             {
-                Console.WriteLine(o.Name + " A: " + o.Activate());
+                Console.WriteLine(o.Name + " A: " + o.Activation);
             }
         }
     }

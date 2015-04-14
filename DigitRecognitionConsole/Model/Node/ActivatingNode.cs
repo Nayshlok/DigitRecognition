@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace DigitRecognitionConsole.Model
 {
-    public class LayerNode : NodeBase
+    public abstract class ActivatingNode : BaseNode
     {
         public List<NetConnection> Inputs { get; set; }
 
-        public LayerNode()
+        public ActivatingNode()
         {
             Inputs = new List<NetConnection>();
         }
@@ -22,13 +22,7 @@ namespace DigitRecognitionConsole.Model
                 throw new Exception("There are no inputs");
             }
             double activation = activationFunction();
-            if (Outputs.Count != 0)
-            {
-                foreach (NetConnection n in Outputs)
-                {
-                    n.Activation = activation;
-                }
-            }
+            this.Activation = activation;
             return activation;
         }
 
@@ -38,30 +32,12 @@ namespace DigitRecognitionConsole.Model
             double SumOfWeightedActivation = 0;
             foreach (NetConnection nc in Inputs)
             {
-                SumOfWeightedActivation += nc.Activation * nc.Weight;
+                SumOfWeightedActivation += nc.Sender.Activation * nc.Weight;
             }
 
             activation = 1 / (1 + Math.Pow(Math.E, -1 * SumOfWeightedActivation));
 
             return activation;
-        }
-
-        public double AdjustWeights()
-        {
-            double WeightedError = 0;
-            foreach (NetConnection nc in Outputs)
-            {
-                WeightedError += nc.Error * nc.Weight;
-            }
-            double activation = activationFunction();
-            double error = activation * (1 - activation) * WeightedError;
-
-            foreach (NetConnection nc in Inputs)
-            {
-                nc.Weight = nc.Weight + (LEARNING_RATE * error * nc.Activation);
-            }
-
-            return error;
         }
 
     }

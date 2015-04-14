@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DigitRecognitionConsole.Model
 {
-    public class OutputNode : LayerNode
+    public class OutputNode : ActivatingNode
     {
         private int _OutputValue;
         public int OutputValue
@@ -25,19 +25,22 @@ namespace DigitRecognitionConsole.Model
 
         public double AdjustWeights(int target)
         {
-            double activation = this.activationFunction();
-            double error = activation * (1 - activation) * (target - activation);
             foreach (NetConnection nc in Inputs)
             {
-                nc.Error = error;
-                nc.Weight = nc.Weight + (LEARNING_RATE * error * nc.Activation);
+                nc.Weight = nc.Weight + (LEARNING_RATE * Error * nc.Sender.Activation);
             }
-            return error;
+            return Error;
         }
 
-        public new double AdjustWeights()
+        public double CalculateError(int target)
         {
-            throw new Exception("Output node has no outputs to adjust weights from. Please provide a target.");
+            this.Error = Activation * (1 - Activation) * (target - Activation);
+            return this.Error;
+        }
+
+        public override string ToString()
+        {
+            return Name + ", Out Value = " + OutputValue + ", A: " + Activation + ", E: " + Error;
         }
     }
 }
