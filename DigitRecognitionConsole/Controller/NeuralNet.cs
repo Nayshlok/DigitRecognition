@@ -113,28 +113,35 @@ namespace DigitRecognitionConsole.Controller
             foreach (OutputNode n in outputNodes)
             {
                 int target = n.OutputValue == Item.expectedResult ? 1 : 0;
-                n.AdjustWeights(target);
+                n.CalculateError(target);
             }
             BaseNode prevLayer = outputNodes[0];
             while (prevLayer != null)
             {
-                prevLayer = AdjustPreviousWeight(prevLayer);
+                prevLayer = CalculatePreviousError(prevLayer);
             }
 
+            foreach (OutputNode n in outputNodes)
+            {
+                n.AdjustWeights();
+            }
+            prevLayer = outputNodes[0];
+            while (prevLayer != null)
+            {
+                prevLayer = AdjustPreviousWeight(prevLayer);
+            }
         }
 
         public BaseNode ActivateNextLayer(BaseNode node)
         {
             foreach (NetConnection nc in node.Outputs)
             {
-                if(nc.Receiver.Outputs.Count != 0){
-                    nc.Receiver.Activate();
-                }
+                nc.Receiver.Activate();
             }
             return node.Outputs.Count == 0 ? null: node.Outputs[0].Receiver;
         }
 
-        public BaseNode AdjustPreviousWeight(BaseNode startNode)
+        public BaseNode CalculatePreviousError(BaseNode startNode)
         {
             BaseNode PrevNode = null;
             if (startNode is ActivatingNode)
@@ -145,6 +152,26 @@ namespace DigitRecognitionConsole.Controller
                     if (nc.Sender is HiddenNode)
                     {
                         HiddenNode temp = (HiddenNode)nc.Sender;
+                        temp.CalculateError();
+                    }
+                }
+                PrevNode = currentNode.Inputs[0].Sender;
+            }
+
+            return PrevNode;
+        }
+
+        public BaseNode AdjustPreviousWeight(BaseNode startNode)
+        {
+            BaseNode PrevNode = null;
+            if (startNode is ActivatingNode)
+            {
+                ActivatingNode currentNode = (ActivatingNode)startNode;
+                foreach (NetConnection nc in currentNode.Inputs)
+                {
+                    if (nc.Sender is ActivatingNode)
+                    {
+                        ActivatingNode temp = (ActivatingNode)nc.Sender;
                         temp.AdjustWeights();
                     }
                 }

@@ -23,15 +23,6 @@ namespace DigitRecognitionConsole.Model
             _OutputValue = OutputValue;
         }
 
-        public double AdjustWeights(int target)
-        {
-            foreach (NetConnection nc in Inputs)
-            {
-                nc.Weight = nc.Weight + (LEARNING_RATE * Error * nc.Sender.Activation);
-            }
-            return Error;
-        }
-
         public double CalculateError(int target)
         {
             this.Error = Activation * (1 - Activation) * (target - Activation);
@@ -40,7 +31,7 @@ namespace DigitRecognitionConsole.Model
 
         public override string ToString()
         {
-            return Name + ", Out Value = " + OutputValue + ", A: " + Activation + ", E: " + Error;
+            return Name + ", Out Value = " + OutputValue + ", A: " + Math.Round(Activation, 5) + ", E: " + Math.Round(Error, 7);
         }
     }
 }

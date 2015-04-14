@@ -16,7 +16,7 @@ namespace DigitRecognitionConsole
         static void Main(string[] args)
         {
             IDataProvider reader = new BinaryXORProvider();
-            NeuralNet net = new NeuralNet(reader.GetNumOfInputs(), reader.GetPossibleOutputs());
+            //NeuralNet net = new NeuralNet(reader.GetNumOfInputs(), reader.GetPossibleOutputs());
 
             //DataItem nextItem = reader.GetNextDataItem();
             //Console.WriteLine(net.judgeInput(nextItem) + ", expected " + nextItem.expectedResult);
@@ -69,16 +69,23 @@ namespace DigitRecognitionConsole
                 pointer = pointer >= possibles.Length - 1 ? 0 : pointer + 1;
             }
             PrintAllWeights(net2);
-            OutputNode TestResult = net2.judgeInput(new byte[] { 1, 1});
-            Console.WriteLine("Testing 1, 1 received " + TestResult + ", Current error: " + TestResult.CalculateError(0));
-            TestResult = net2.judgeInput(new byte[] { 0, 1 });
-            Console.WriteLine("Testing 0, 1 received " + TestResult);
-            TestResult = net2.judgeInput(new byte[] { 1, 0 });
-            Console.WriteLine("Testing 1, 0 received " + TestResult);
-            TestResult = net2.judgeInput(new byte[] { 0, 0 });
-            Console.WriteLine("Testing 0, 0 received " + TestResult);
+
+            PrintTestResults(new byte[] { 1, 1 }, 0, net2);
+            PrintTestResults(new byte[] { 1, 0 }, 1, net2);
+            PrintTestResults(new byte[] { 0, 1 }, 1, net2);
+            PrintTestResults(new byte[] { 0, 0 }, 0, net2);
             //PrintAllWeights(net2);
 
+        }
+
+        public static void PrintTestResults(byte[] data, int expected, NeuralNet net)
+        {
+            OutputNode TestResult = net.judgeInput(data);
+            net.outputNodes[0].CalculateError(expected);
+            net.outputNodes[1].CalculateError(expected);
+            Console.WriteLine("Testing 1, 1: received " + TestResult);
+            Console.WriteLine(net.outputNodes[0]);
+            Console.WriteLine(net.outputNodes[1]);
         }
 
         public static void PrintAllWeights(NeuralNet net)

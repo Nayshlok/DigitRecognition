@@ -40,5 +40,12 @@ namespace DigitRecognitionConsole.Model
             return activation;
         }
 
+        public void AdjustWeights()
+        {
+            foreach (NetConnection nc in Inputs)
+            {
+                nc.Weight = nc.Weight + (LEARNING_RATE * Error * nc.Sender.Activation);
+            }
+        }
     }
 }

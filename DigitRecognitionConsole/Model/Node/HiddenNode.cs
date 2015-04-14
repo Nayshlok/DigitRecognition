@@ -8,7 +8,9 @@ namespace DigitRecognitionConsole.Model
 {
     public class HiddenNode : ActivatingNode
     {
-        public double AdjustWeights()
+
+
+        public double CalculateError()
         {
             double WeightedError = 0;
             foreach (NetConnection nc in Outputs)
@@ -16,14 +18,8 @@ namespace DigitRecognitionConsole.Model
                 WeightedError += nc.Receiver.Error * nc.Weight;
             }
             double activation = activationFunction();
-            double error = activation * (1 - activation) * WeightedError;
-
-            foreach (NetConnection nc in Inputs)
-            {
-                nc.Weight = nc.Weight + (LEARNING_RATE * error * nc.Sender.Activation);
-            }
-
-            return error;
+            this.Error = activation * (1 - activation) * WeightedError;
+            return Error;
         }
 
         public override string ToString()
