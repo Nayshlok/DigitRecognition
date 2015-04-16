@@ -21,7 +21,7 @@ namespace DigitRecognitionConsole.Model
         {
             this.Sender = Sender;
             this.Receiver = Receiver;
-            Weight = rand.NextDouble();
+            Weight = rand.NextDouble() - 0.5;
             //Weight = 0;
         }
 

@@ -15,7 +15,7 @@ namespace DigitRecognitionConsole.Controller
         private string LabelPath;
         private int index = 0;
         private int NumberOfImages;
-        public int DataSize { get; set; }
+        public int ImageSize { get; set; }
 
         public DigitDataReader(string DataPath, string LabelPath)
         {
@@ -31,7 +31,7 @@ namespace DigitRecognitionConsole.Controller
                 NumberOfImages = ReadInt(stream);
                 int row = ReadInt(stream);
                 int col = ReadInt(stream);
-                this.DataSize = row * col;
+                this.ImageSize = row * col;
             }
         }
 
@@ -47,7 +47,7 @@ namespace DigitRecognitionConsole.Controller
 
         public int GetNumOfInputs()
         {
-            return DataSize;
+            return ImageSize;
         }
 
         public DataItem GetNextDataItem()
@@ -56,7 +56,7 @@ namespace DigitRecognitionConsole.Controller
 
             using (FileStream stream = new FileStream(DataPath, FileMode.Open))
             { 
-                stream.Seek((index * DataSize) + 16, SeekOrigin.Begin);
+                stream.Seek((index * ImageSize) + 16, SeekOrigin.Begin);
                 image = new DataItem { data = ReadSingleImage(stream), expectedResult = FindLabel(index)};
                 index++;
             }
@@ -66,7 +66,7 @@ namespace DigitRecognitionConsole.Controller
 
         private byte[] ReadSingleImage(Stream stream)
         {
-            byte[] image = new byte[DataSize];
+            byte[] image = new byte[ImageSize];
             stream.Read(image, 0, image.Length);
             return image;
         }
@@ -134,6 +134,12 @@ namespace DigitRecognitionConsole.Controller
         public int GetTrainingSetSize()
         {
             return NumberOfImages;
+        }
+
+
+        public int GetHiddenLayerSize()
+        {
+            return ImageSize + 1;
         }
     }
 }

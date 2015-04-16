@@ -35,6 +35,7 @@ namespace DigitRecognitionConsole.Model
                 SumOfWeightedActivation += nc.Sender.Activation * nc.Weight;
             }
 
+            //activation = SumOfWeightedActivation;
             activation = 1 / (1 + Math.Pow(Math.E, -1 * SumOfWeightedActivation));
 
             return activation;

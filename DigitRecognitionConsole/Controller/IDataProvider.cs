@@ -13,5 +13,6 @@ namespace DigitRecognitionConsole.Controller
         int GetNumOfInputs();
         DataItem GetNextDataItem();
         int GetTrainingSetSize();
+        int GetHiddenLayerSize();
     }
 }

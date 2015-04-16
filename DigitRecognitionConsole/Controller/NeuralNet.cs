@@ -13,7 +13,7 @@ namespace DigitRecognitionConsole.Controller
         public OutputNode[] outputNodes;
         private BiasNode bias;
 
-        public NeuralNet(int inputs, int[] outputs)
+        public NeuralNet(int inputs, int HiddenLayersize, int[] outputs)
         {
             if (inputs == 0)
             {
@@ -26,13 +26,15 @@ namespace DigitRecognitionConsole.Controller
             bias = new BiasNode();
             bias.Name = "B";
             inputNodes = new InputNode[inputs];
-            HiddenNode[] Layer1 = new HiddenNode[inputNodes.Length];
+            HiddenNode[] Layer1 = new HiddenNode[HiddenLayersize];
             for (int i = 0; i < inputNodes.Length; i++)
             {
                 inputNodes[i] = new InputNode { Name="I" + i };
-                Layer1[i] = new HiddenNode { Name="L" + i };
             }
-            Layer1[Layer1.Length - 1] = new HiddenNode { Name="L" + (Layer1.Length - 1) };
+            for (int i = 0; i < Layer1.Length; i++)
+            {
+                Layer1[i] = new HiddenNode { Name = "L" + i };
+            }
             outputNodes = new OutputNode[outputs.Length];
             for (int i = 0; i < outputNodes.Length; i++)
             {

@@ -54,7 +54,7 @@ namespace DigitRecognitionConsole
 
             //PrintAllWeights(net);
 
-            NeuralNet net2 = new NeuralNet(reader.GetNumOfInputs(), reader.GetPossibleOutputs());
+            NeuralNet net2 = new NeuralNet(reader.GetNumOfInputs(), reader.GetHiddenLayerSize(), reader.GetPossibleOutputs());
             DataItem[] possibles = new DataItem[] {
                 new DataItem { data = new byte[] { 1, 1 }, expectedResult = 1 ^ 1 },
                 new DataItem { data = new byte[] { 1, 0 }, expectedResult = 1 ^ 0 },
@@ -83,7 +83,7 @@ namespace DigitRecognitionConsole
             OutputNode TestResult = net.judgeInput(data);
             net.outputNodes[0].CalculateError(expected);
             net.outputNodes[1].CalculateError(expected);
-            Console.WriteLine("Testing 1, 1: received " + TestResult);
+            Console.WriteLine("Testing " + data[0] + ", " + data[1] + ": received " + TestResult);
             Console.WriteLine(net.outputNodes[0]);
             Console.WriteLine(net.outputNodes[1]);
         }
