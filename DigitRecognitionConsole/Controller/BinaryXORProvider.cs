@@ -11,8 +11,8 @@ namespace DigitRecognitionConsole.Controller
     {
         private static Random rand = new Random();
         private readonly int XOR_INPUTS = 2;
-        private readonly int XOR_HIDDEN_SIZE = 3;
-        private readonly int NUMBER_OF_SETS = 10000;
+        private readonly int XOR_HIDDEN_SIZE = 2;
+        private readonly int NUMBER_OF_SETS = 1000000;
 
         public int[] GetPossibleOutputs()
         {
