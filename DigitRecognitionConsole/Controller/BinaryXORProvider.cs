@@ -11,8 +11,8 @@ namespace DigitRecognitionConsole.Controller
     {
         private static Random rand = new Random();
         private readonly int XOR_INPUTS = 2;
-        private readonly int XOR_HIDDEN_SIZE = 2;
-        private readonly int NUMBER_OF_SETS = 1000000;
+        private readonly int XOR_HIDDEN_SIZE = 6;
+        private readonly int NUMBER_OF_SETS = 500000;
 
         public int[] GetPossibleOutputs()
         {
@@ -24,15 +24,19 @@ namespace DigitRecognitionConsole.Controller
             return XOR_INPUTS;
         }
 
-        public DataItem GetNextDataItem()
+        public IEnumerable<DataItem> GetNextDataItem()
         {
-            byte[] data = new byte[] { (byte)rand.Next(2), (byte)rand.Next(2)};
-            //byte[] data = new byte[] { 1, 0 };
-            int expected = data[0] ^ data[1];
-            return new DataItem { data = data, expectedResult = expected };
+            for (int i = 0; i < NUMBER_OF_SETS; i++)
+            {
+                byte[] data = new byte[] { (byte)rand.Next(2), (byte)rand.Next(2) };
+                //byte[] data = new byte[] { 1, 0 };
+                int expected = data[0] ^ data[1];
+                yield return new DataItem { data = data, expectedResult = expected };
+            }
+            //return new DataItem { data = data, expectedResult = expected };
         }
 
-        public int GetTrainingSetSize()
+        public int GetSetSize()
         {
             return NUMBER_OF_SETS;
         }

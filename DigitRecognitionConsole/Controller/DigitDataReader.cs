@@ -11,6 +11,8 @@ namespace DigitRecognitionConsole.Controller
     public class DigitDataReader : IDataProvider
     {
         private readonly int NUM_OF_DIGITS = 10;
+        //Metadata consists of 4 ints, a magic number, the number of images in the file, the number of columns, and the number of rows. 4 ints take 16 bytes, thus the offset.
+        private readonly int METADATA_SIZE = 16;
         private string DataPath;
         private string LabelPath;
         private int index = 0;
@@ -21,13 +23,15 @@ namespace DigitRecognitionConsole.Controller
         {
             this.DataPath = DataPath;
             this.LabelPath = LabelPath;
-            SetImageSize();
+            ReadMetadata();
         }
 
-        private void SetImageSize()
+        private void ReadMetadata()
         {
             using (FileStream stream = new FileStream(DataPath, FileMode.Open))
             {
+                //Skip magic number
+                stream.Seek(4, SeekOrigin.Begin);
                 NumberOfImages = ReadInt(stream);
                 int row = ReadInt(stream);
                 int col = ReadInt(stream);
@@ -50,18 +54,19 @@ namespace DigitRecognitionConsole.Controller
             return ImageSize;
         }
 
-        public DataItem GetNextDataItem()
+        public IEnumerable<DataItem> GetNextDataItem()
         {
-            DataItem image;
+            DataItem image = null;
 
-            using (FileStream stream = new FileStream(DataPath, FileMode.Open))
-            { 
-                stream.Seek((index * ImageSize) + 16, SeekOrigin.Begin);
-                image = new DataItem { data = ReadSingleImage(stream), expectedResult = FindLabel(index)};
-                index++;
+            for (int i = 0; i < NumberOfImages; i++)
+            {
+                using (FileStream stream = new FileStream(DataPath, FileMode.Open))
+                {
+                    stream.Seek((i * ImageSize) + METADATA_SIZE, SeekOrigin.Begin);
+                    image = new DataItem { data = ReadSingleImage(stream), expectedResult = FindLabel(index) };
+                }
+                yield return image;
             }
-
-            return image;
         }
 
         private byte[] ReadSingleImage(Stream stream)
@@ -131,7 +136,7 @@ namespace DigitRecognitionConsole.Controller
         }
 
 
-        public int GetTrainingSetSize()
+        public int GetSetSize()
         {
             return NumberOfImages;
         }

@@ -5,80 +5,46 @@ using System.Text;
 using System.Threading.Tasks;
 using DigitRecognitionConsole.Model;
 using DigitRecognitionConsole.Controller;
+using System.Diagnostics;
 
 namespace DigitRecognitionConsole
 {
     class Program
     {
-        //private static readonly string DataPath = @"C:\Users\David Borland\Documents\Capstone\DigitRecognitionConsole\DigitRecognitionConsole\Data\train-images.idx3-ubyte";
-        //private static readonly string LabelPath = @"C:\Users\David Borland\Documents\Capstone\DigitRecognitionConsole\DigitRecognitionConsole\Data\train-labels.idx1-ubyte";
+        private static readonly string TrainingDataPath = @"C:\Users\David Borland\Documents\Capstone\DigitRecognitionConsole\DigitRecognitionConsole\Data\train-images.idx3-ubyte";
+        private static readonly string TrainingLabelPath = @"C:\Users\David Borland\Documents\Capstone\DigitRecognitionConsole\DigitRecognitionConsole\Data\train-labels.idx1-ubyte";
+        private static readonly string TestingDataPath = @"C:\Users\David Borland\Documents\Capstone\DigitRecognitionConsole\DigitRecognitionConsole\Data\t10k-images.idx3-ubyte";
+        private static readonly string TestingLabelPath = @"C:\Users\David Borland\Documents\Capstone\DigitRecognitionConsole\DigitRecognitionConsole\Data\t10k-labels.idx1-ubyte";
         
         static void Main(string[] args)
         {
-            IDataProvider reader = new BinaryXORProvider();
-            //NeuralNet net = new NeuralNet(reader.GetNumOfInputs(), reader.GetPossibleOutputs());
-
-            //DataItem nextItem = reader.GetNextDataItem();
-            //Console.WriteLine(net.judgeInput(nextItem) + ", expected " + nextItem.expectedResult);
-
-            //PrintAllWeights(net);
-
-            //int correctCount = 0;
-            DataItem nextItem;
-            //for (int i = 0; i < reader.GetTrainingSetSize(); i++)
-            //{
-            //    nextItem = new DataItem { data = new byte[] { 0, 1 }, expectedResult = 0 ^ 1 };
-            //    if (net.judgeInput(nextItem.data) == nextItem.expectedResult)
-            //    {
-            //        correctCount++;
-            //    }
-            //}
-            //Console.WriteLine("The network got " + correctCount + " correct of " + reader.GetTrainingSetSize());
-
-            //for (int i = 0; i < reader.GetTrainingSetSize(); i++)
-            //{
-            //    nextItem = new DataItem { data = new byte[] { 0, 1 }, expectedResult = 0 ^ 1 };
-            //    net.TrainNetwork(nextItem);
-            //}
-
-            //correctCount = 0;
-            //for (int i = 0; i < reader.GetTrainingSetSize(); i++)
-            //{
-            //    nextItem = new DataItem { data = new byte[] { 0, 1 }, expectedResult = 0 ^ 1 };
-            //    if (net.judgeInput(nextItem.data) == nextItem.expectedResult)
-            //    {
-            //        correctCount++;
-            //    }
-            //}
-            //Console.WriteLine("The network got " + correctCount + " correct of " + reader.GetTrainingSetSize());
-
-            //PrintAllWeights(net);
-
-            NeuralNet net2 = new NeuralNet(reader.GetNumOfInputs(), reader.GetHiddenLayerSize(), reader.GetPossibleOutputs());
-            DataItem[] possibles = new DataItem[] {
-                new DataItem { data = new byte[] { 1, 1 }, expectedResult = 1 ^ 1 },
-                new DataItem { data = new byte[] { 1, 0 }, expectedResult = 1 ^ 0 },
-                new DataItem { data = new byte[] { 0, 1 }, expectedResult = 0 ^ 1 },
-                new DataItem { data = new byte[] { 0, 0 }, expectedResult = 0 ^ 0 }
-            };
-            int pointer = 0;
-            for (int i = 0; i < reader.GetTrainingSetSize(); i++)
+            Stopwatch watch = new Stopwatch();
+            IDataProvider provider = new DigitDataReader(TrainingDataPath, TrainingLabelPath);
+            NeuralNet net2 = new NeuralNet(provider.GetNumOfInputs(), provider.GetHiddenLayerSize(), provider.GetPossibleOutputs());
+            watch.Start();
+            foreach (DataItem nextItem in provider.GetNextDataItem())
             {
-                nextItem = possibles[pointer];
                 net2.TrainNetwork(nextItem);
-                pointer = pointer >= possibles.Length - 1 ? 0 : pointer + 1;
             }
-            PrintAllWeights(net2);
+            watch.Stop();
+            Console.WriteLine("Milliseconds to process: " + watch.ElapsedMilliseconds);
 
-            PrintTestResults(new byte[] { 1, 1 }, 0, net2);
-            PrintTestResults(new byte[] { 1, 0 }, 1, net2);
-            PrintTestResults(new byte[] { 0, 1 }, 1, net2);
-            PrintTestResults(new byte[] { 0, 0 }, 0, net2);
+            watch.Reset();
+            watch.Start();
+            IDataProvider TestProvider = new DigitDataReader(TestingDataPath, TestingLabelPath);
+            Console.WriteLine("Percentage correct: " + TestNetworkAccuracy(net2, provider) + "%");
+            watch.Stop();
+            Console.WriteLine("Milliseconds to test: " + watch.ElapsedMilliseconds);
+
+            //PrintTestResults(new byte[] { 1, 1 }, 0, net2);
+            //PrintTestResults(new byte[] { 1, 0 }, 1, net2);
+            //PrintTestResults(new byte[] { 0, 1 }, 1, net2);
+            //PrintTestResults(new byte[] { 0, 0 }, 0, net2);
             //PrintAllWeights(net2);
 
         }
 
-        public static void PrintTestResults(byte[] data, int expected, NeuralNet net)
+        public static void PrintXORTestResults(byte[] data, int expected, NeuralNet net)
         {
             OutputNode TestResult = net.judgeInput(data);
             net.outputNodes[0].CalculateError(expected);
@@ -114,6 +80,21 @@ namespace DigitRecognitionConsole
                 Console.WriteLine(o.Name + " A: " + o.Activation);
             }
         }
+
+        public static double TestNetworkAccuracy(NeuralNet net, IDataProvider provider)
+        {
+            int CorrectCount = 0;
+            foreach (DataItem item in provider.GetNextDataItem())
+            {
+                OutputNode Result = net.judgeInput(item.data);
+                if (Result.OutputValue == item.expectedResult)
+                {
+                    CorrectCount++;
+                }
+            }
+            return (((double)CorrectCount) / ((double)provider.GetSetSize()));
+        }
+
     }
 }
 /*

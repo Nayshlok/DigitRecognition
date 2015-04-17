@@ -11,8 +11,8 @@ namespace DigitRecognitionConsole.Controller
     {
         int[] GetPossibleOutputs();
         int GetNumOfInputs();
-        DataItem GetNextDataItem();
-        int GetTrainingSetSize();
+        IEnumerable<DataItem> GetNextDataItem();
+        int GetSetSize();
         int GetHiddenLayerSize();
     }
 }
