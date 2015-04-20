@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace DigitRecognitionConsole.Model
 {
+    [Serializable]
     public abstract class ActivatingNode : BaseNode
     {
         public List<NetConnection> Inputs { get; set; }

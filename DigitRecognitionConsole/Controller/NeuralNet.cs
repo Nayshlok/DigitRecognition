@@ -7,6 +7,7 @@ using DigitRecognitionConsole.Model;
 
 namespace DigitRecognitionConsole.Controller
 {
+    [Serializable]
     public class NeuralNet
     {
         public InputNode[] inputNodes;
@@ -131,6 +132,15 @@ namespace DigitRecognitionConsole.Controller
             while (prevLayer != null)
             {
                 prevLayer = AdjustPreviousWeight(prevLayer);
+            }
+        }
+
+        public void BatchTrainNetwork(IEnumerable<DataItem> items)
+        {
+            double error = 0;
+            foreach (DataItem Item in items)
+            {
+
             }
         }
 

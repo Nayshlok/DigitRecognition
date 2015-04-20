@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace DigitRecognitionConsole.Model
 {
+    [Serializable]
     public class InputNode : BaseNode
     {
         public double inputValue { get; set; }

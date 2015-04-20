@@ -15,7 +15,6 @@ namespace DigitRecognitionConsole.Controller
         private readonly int METADATA_SIZE = 16;
         private string DataPath;
         private string LabelPath;
-        private int index = 0;
         private int NumberOfImages;
         public int ImageSize { get; set; }
 
@@ -63,7 +62,7 @@ namespace DigitRecognitionConsole.Controller
                 using (FileStream stream = new FileStream(DataPath, FileMode.Open))
                 {
                     stream.Seek((i * ImageSize) + METADATA_SIZE, SeekOrigin.Begin);
-                    image = new DataItem { data = ReadSingleImage(stream), expectedResult = FindLabel(index) };
+                    image = new DataItem { data = ReadSingleImage(stream), expectedResult = FindLabel(i) };
                 }
                 yield return image;
             }
@@ -144,7 +143,7 @@ namespace DigitRecognitionConsole.Controller
 
         public int GetHiddenLayerSize()
         {
-            return ImageSize + 1;
+            return ImageSize/2;
         }
     }
 }

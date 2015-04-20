@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace DigitRecognitionConsole.Model
 {
+    [Serializable]
     public class HiddenNode : ActivatingNode
     {
-
-
         public double CalculateError()
         {
             double WeightedError = 0;

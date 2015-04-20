@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace DigitRecognitionConsole.Model
 {
+    [Serializable]
     public class OutputNode : ActivatingNode
     {
         private int _OutputValue;

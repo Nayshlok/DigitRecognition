@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace DigitRecognitionConsole.Model
 {
+    [Serializable]
     public class BiasNode : BaseNode
     {
         private readonly int BIAS_ACTIVATION = 1;

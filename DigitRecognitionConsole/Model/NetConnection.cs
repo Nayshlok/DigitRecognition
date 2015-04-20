@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace DigitRecognitionConsole.Model
 {
+    [Serializable]
     public class NetConnection
     {
         public string Name { get; set; }
