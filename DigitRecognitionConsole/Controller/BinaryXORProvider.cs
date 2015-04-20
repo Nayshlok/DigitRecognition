@@ -12,7 +12,7 @@ namespace DigitRecognitionConsole.Controller
         private static Random rand = new Random();
         private readonly int XOR_INPUTS = 2;
         private readonly int XOR_HIDDEN_SIZE = 6;
-        private readonly int NUMBER_OF_SETS = 500000;
+        private readonly int NUMBER_OF_SETS = 1000000;
 
         public int[] GetPossibleOutputs()
         {

@@ -19,7 +19,8 @@ namespace DigitRecognitionConsole
 
         static void Main(string[] args)
         {
-            IDataProvider provider = new DigitDataReader(TrainingDataPath, TrainingLabelPath);
+            //IDataProvider provider = new DigitDataReader(TrainingDataPath, TrainingLabelPath);
+            IDataProvider provider = new BinaryXORProvider();
             PersistentNetwork StoredNetwork = null;
             Console.WriteLine("Enter File Name:");
             string FileName = Console.ReadLine();
@@ -61,18 +62,19 @@ namespace DigitRecognitionConsole
             {
                 watch.Reset();
                 watch.Start();
-                IDataProvider TestProvider = new DigitDataReader(TestingDataPath, TestingLabelPath);
-                Console.WriteLine("Percentage correct: " + TestNetworkAccuracy(StoredNetwork.Network, TestProvider) + "%");
+                //IDataProvider TestProvider = new DigitDataReader(TestingDataPath, TestingLabelPath);
+                IDataProvider TestProvider = new BinaryXORProvider();
+                Console.WriteLine("Percentage correct: " + TestNetworkAccuracy(StoredNetwork.Network, TestProvider, 10000) + "%");
                 watch.Stop();
                 Console.WriteLine("Milliseconds to test: " + watch.ElapsedMilliseconds);
 
             }
 
-            //PrintTestResults(new byte[] { 1, 1 }, 0, net2);
-            //PrintTestResults(new byte[] { 1, 0 }, 1, net2);
-            //PrintTestResults(new byte[] { 0, 1 }, 1, net2);
-            //PrintTestResults(new byte[] { 0, 0 }, 0, net2);
-            //PrintAllWeights(net2);
+            PrintXORTestResults(new byte[] { 1, 1 }, 0, StoredNetwork.Network);
+            PrintXORTestResults(new byte[] { 1, 0 }, 1, StoredNetwork.Network);
+            PrintXORTestResults(new byte[] { 0, 1 }, 1, StoredNetwork.Network);
+            PrintXORTestResults(new byte[] { 0, 0 }, 0, StoredNetwork.Network);
+            PrintAllWeights(StoredNetwork.Network);
 
         }
 
@@ -113,11 +115,11 @@ namespace DigitRecognitionConsole
             }
         }
 
-        public static double TestNetworkAccuracy(NeuralNet net, IDataProvider provider)
+        public static double TestNetworkAccuracy(NeuralNet net, IDataProvider provider, int testNumber = -1)
         {
-            int setSize = provider.GetSetSize();
+            int setSize = testNumber == -1 ? provider.GetSetSize() : testNumber;
             int CorrectCount = 0;
-            foreach (DataItem item in provider.GetNextDataItem())
+            foreach (DataItem item in provider.GetNextDataItem().Take(setSize))
             {
                 OutputNode Result = net.judgeInput(item.data);
                 if (Result.OutputValue == item.expectedResult)

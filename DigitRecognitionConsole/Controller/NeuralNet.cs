@@ -140,7 +140,41 @@ namespace DigitRecognitionConsole.Controller
             double error = 0;
             foreach (DataItem Item in items)
             {
+                if (Item.data.Length != inputNodes.Length)
+                {
+                    throw new Exception("The incoming data does not fit the network.");
+                }
+                bias.Activate();
+                for (int i = 0; i < inputNodes.Length; i++)
+                {
+                    inputNodes[i].inputValue = Item.data[i];
+                    inputNodes[i].Activate();
+                }
+                BaseNode nextLayer = inputNodes[0];
+                while (nextLayer != null)
+                {
+                    nextLayer = ActivateNextLayer(nextLayer);
+                }
+                foreach (OutputNode n in outputNodes)
+                {
+                    int target = n.OutputValue == Item.expectedResult ? 1 : 0;
+                    n.CalculateError(target);
+                }
+                BaseNode prevLayer = outputNodes[0];
+                while (prevLayer != null)
+                {
+                    prevLayer = CalculatePreviousError(prevLayer);
+                }
+            }
 
+            foreach (OutputNode n in outputNodes)
+            {
+                n.AdjustWeights();
+            }
+            BaseNode previous = outputNodes[0];
+            while (previous != null)
+            {
+                previous = AdjustPreviousWeight(previous);
             }
         }
 
