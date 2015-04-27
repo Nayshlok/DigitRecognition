@@ -10,17 +10,17 @@ namespace DigitRecognitionConsole.Controller
     [Serializable]
     public class NeuralNet
     {
-        public InputNode[] inputNodes;
-        public OutputNode[] outputNodes;
+        private InputNode[] inputNodes;
+        private OutputNode[] outputNodes;
         private BiasNode bias;
 
-        public NeuralNet(int inputs, int HiddenLayersize, int[] outputs)
+        public NeuralNet(int inputs, int HiddenLayersize, int outputs)
         {
             if (inputs == 0)
             {
                 throw new Exception("You must have some inputs");
             }
-            if (outputs == null || outputs.Length == 0)
+            if (outputs== 0)
             {
                 throw new Exception("You must have outputs");
             }
@@ -36,10 +36,10 @@ namespace DigitRecognitionConsole.Controller
             {
                 Layer1[i] = new HiddenNode { Name = "L" + i };
             }
-            outputNodes = new OutputNode[outputs.Length];
+            outputNodes = new OutputNode[outputs];
             for (int i = 0; i < outputNodes.Length; i++)
             {
-                outputNodes[i] = new OutputNode(outputs[i]) { Name = "O" + i };
+                outputNodes[i] = new OutputNode() { Name = "O" + i };
             }
 
             EstablishConnections(inputNodes, Layer1);
@@ -62,7 +62,7 @@ namespace DigitRecognitionConsole.Controller
             }
         }
 
-        public OutputNode judgeInput(byte[] data)
+        public OutputNode[] judgeInput(byte[] data)
         {
             if (data.Length != inputNodes.Length)
             {
@@ -79,45 +79,15 @@ namespace DigitRecognitionConsole.Controller
             {
                 nextLayer = ActivateNextLayer(nextLayer);
             }
-            OutputNode Selected = outputNodes[0];
-            double highestActivation = Selected.Activate();
-            foreach (OutputNode n in outputNodes)
-            {
-                
-                double activation = n.Activate();
-                if (activation > highestActivation)
-                {
-                    Selected = n;
-                    highestActivation = activation;
-                }
-
-
-            }
-            return Selected;
+            return outputNodes;
         }
 
-        public void TrainNetwork(DataItem Item)
+        public void TrainNetwork(bool[] shouldActivate)
         {
-            if (Item.data.Length != inputNodes.Length)
+            for (int i = 0; i < outputNodes.Length; i++)
             {
-                throw new Exception("The incoming data does not fit the network.");
-            }
-            bias.Activate();
-            for (int i = 0; i < inputNodes.Length; i++)
-            {
-                inputNodes[i].inputValue = Item.data[i];
-                inputNodes[i].Activate();
-            }
-            BaseNode nextLayer = inputNodes[0];
-            while (nextLayer != null)
-            {
-                nextLayer = ActivateNextLayer(nextLayer);
-            }
-            foreach (OutputNode n in outputNodes)
-            {
-                int target = n.OutputValue == Item.expectedResult ? 1 : 0;
-                n.CalculateError(target);
-                //n.AdjustWeights();
+                int target = shouldActivate[i] ? 1 : 0;
+                outputNodes[i].CalculateError(target);
             }
             BaseNode prevLayer = outputNodes[0];
             while (prevLayer != null)
@@ -136,48 +106,48 @@ namespace DigitRecognitionConsole.Controller
             }
         }
 
-        public void BatchTrainNetwork(IEnumerable<DataItem> items)
-        {
-            double error = 0;
-            foreach (DataItem Item in items)
-            {
-                if (Item.data.Length != inputNodes.Length)
-                {
-                    throw new Exception("The incoming data does not fit the network.");
-                }
-                bias.Activate();
-                for (int i = 0; i < inputNodes.Length; i++)
-                {
-                    inputNodes[i].inputValue = Item.data[i];
-                    inputNodes[i].Activate();
-                }
-                BaseNode nextLayer = inputNodes[0];
-                while (nextLayer != null)
-                {
-                    nextLayer = ActivateNextLayer(nextLayer);
-                }
-                foreach (OutputNode n in outputNodes)
-                {
-                    int target = n.OutputValue == Item.expectedResult ? 1 : 0;
-                    n.CalculateError(target);
-                }
-                BaseNode prevLayer = outputNodes[0];
-                while (prevLayer != null)
-                {
-                    prevLayer = CalculatePreviousError(prevLayer);
-                }
-            }
+        //public void BatchTrainNetwork(IEnumerable<DataItem> items)
+        //{
+        //    double error = 0;
+        //    foreach (DataItem Item in items)
+        //    {
+        //        if (Item.data.Length != inputNodes.Length)
+        //        {
+        //            throw new Exception("The incoming data does not fit the network.");
+        //        }
+        //        bias.Activate();
+        //        for (int i = 0; i < inputNodes.Length; i++)
+        //        {
+        //            inputNodes[i].inputValue = Item.data[i];
+        //            inputNodes[i].Activate();
+        //        }
+        //        BaseNode nextLayer = inputNodes[0];
+        //        while (nextLayer != null)
+        //        {
+        //            nextLayer = ActivateNextLayer(nextLayer);
+        //        }
+        //        foreach (OutputNode n in outputNodes)
+        //        {
+        //            int target = n.OutputValue == Item.expectedResult ? 1 : 0;
+        //            n.CalculateError(target);
+        //        }
+        //        BaseNode prevLayer = outputNodes[0];
+        //        while (prevLayer != null)
+        //        {
+        //            prevLayer = CalculatePreviousError(prevLayer);
+        //        }
+        //    }
 
-            foreach (OutputNode n in outputNodes)
-            {
-                n.AdjustWeights();
-            }
-            BaseNode previous = outputNodes[0];
-            while (previous != null)
-            {
-                previous = AdjustPreviousWeight(previous);
-            }
-        }
+        //    foreach (OutputNode n in outputNodes)
+        //    {
+        //        n.AdjustWeights();
+        //    }
+        //    BaseNode previous = outputNodes[0];
+        //    while (previous != null)
+        //    {
+        //        previous = AdjustPreviousWeight(previous);
+        //    }
+        //}
 
         public BaseNode ActivateNextLayer(BaseNode node)
         {

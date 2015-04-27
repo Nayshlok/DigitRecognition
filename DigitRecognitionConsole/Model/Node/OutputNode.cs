@@ -10,19 +10,6 @@ namespace DigitRecognitionConsole.Model
     [Serializable]
     public class OutputNode : ActivatingNode
     {
-        private int _OutputValue;
-        public int OutputValue
-        {
-            get
-            {
-                return _OutputValue;
-            }
-        }
-
-        public OutputNode(int OutputValue)
-        {
-            _OutputValue = OutputValue;
-        }
 
         public double CalculateError(int target)
         {
@@ -32,7 +19,7 @@ namespace DigitRecognitionConsole.Model
 
         public override string ToString()
         {
-            return Name + ", Out Value = " + OutputValue + ", A: " + Math.Round(Activation, 5) + ", E: " + Math.Round(Error, 7);
+            return Name + ", A: " + Math.Round(Activation, 5) + ", E: " + Math.Round(Error, 7);
         }
     }
 }

@@ -10,36 +10,27 @@ namespace DigitRecognitionConsole.Controller
     public class XORJudge : IJudge
     {
 
-        private readonly int INPUT_SIZE = 2;
         private readonly int OUTPUT_SIZE = 1;
+        private readonly double INACTIVE_THRESHOLD = 0.25;
+        private readonly double ACTIVE_THRESHOLD = 0.75;
 
-        public bool JudgeNetwork(byte[] data, OutputNode[] outputs)
+        public bool JudgeNetwork(DataItem Item, OutputNode[] outputs)
         {
-            TryValidParamters(data, outputs);
-            int expectedResult = data[0] ^ data[1];
-            bool result = false;
-            if (expectedResult == 0)
-            {
-                result = outputs[0].Activation > outputs[1].Activation;
-            }
-            else
-            {
-                result = outputs[0].Activation < outputs[1].Activation;
-            }
+            TryValidParamters(outputs);
+            bool result = (outputs[0].Activation < INACTIVE_THRESHOLD && Item.expectedResult == 0) || (outputs[0].Activation > ACTIVE_THRESHOLD && Item.expectedResult == 1);
             return result;
         }
 
-        public bool[] TrainingResult(byte[] data, OutputNode[] outputs)
+        public bool[] TrainingResult(DataItem Item, OutputNode[] outputs)
         {
-            TryValidParamters(data, outputs);
+            TryValidParamters(outputs);
+            bool[] shouldActivate = new bool[outputs.Length];
+            shouldActivate[0] = Item.expectedResult == 1;
+            return shouldActivate;
         }
 
-        private void TryValidParamters(byte[] data, OutputNode[] outputs)
+        private void TryValidParamters(OutputNode[] outputs)
         {
-            if (data.Length != INPUT_SIZE)
-            {
-                throw new Exception("Input recieved does not match this judge");
-            }
             if (outputs.Length != OUTPUT_SIZE)
             {
                 throw new Exception("Output size does not match this judge.");

@@ -38,14 +38,9 @@ namespace DigitRecognitionConsole.Controller
             }
         }
 
-        public int[] GetPossibleOutputs()
+        public int GetPossibleOutputs()
         {
-            int[] numbers = new int[NUM_OF_DIGITS];
-            for (int i = 0; i < numbers.Length; i++)
-            {
-                numbers[i] = i;
-            }
-            return numbers;
+            return NUM_OF_DIGITS;
         }
 
         public int GetNumOfInputs()

@@ -7,12 +7,10 @@ using System.Threading.Tasks;
 
 namespace DigitRecognitionConsole.Controller
 {
-    public interface IDataProvider
+    public interface IJudge
     {
-        int GetPossibleOutputs();
-        int GetNumOfInputs();
-        IEnumerable<DataItem> GetNextDataItem();
-        int GetSetSize();
-        int GetHiddenLayerSize();
+        bool JudgeNetwork(DataItem Item, OutputNode[] outputs);
+        bool[] TrainingResult(DataItem Item, OutputNode[] outputs);
+
     }
 }
