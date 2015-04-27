@@ -16,8 +16,7 @@ namespace DigitRecognitionConsole.Model
             {
                 WeightedError += nc.Receiver.Error * nc.Weight;
             }
-            double activation = activationFunction();
-            this.Error += activation * (1 - activation) * WeightedError;
+            this.Error = Activation * (1 - Activation) * WeightedError;
             return Error;
         }
 

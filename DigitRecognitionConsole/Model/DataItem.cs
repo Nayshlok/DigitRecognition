@@ -26,5 +26,23 @@ namespace DigitRecognitionConsole.Model
             }
             return dataString.ToString() + ", Expect: " + expectedResult;
         }
+
+        public override bool Equals(object obj)
+        {
+            bool areEqual = false;
+
+            if (obj is DataItem)
+            {
+                DataItem other = obj as DataItem;
+                areEqual = Enumerable.SequenceEqual(this.data, other.data) && this.expectedResult == other.expectedResult;
+            }
+
+            return areEqual;
+        }
+
+        //public override int GetHashCode()
+        //{
+        //    return 1001;
+        //}
     }
 }

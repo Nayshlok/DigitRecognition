@@ -26,7 +26,7 @@ namespace DigitRecognitionConsole.Model
 
         public double CalculateError(int target)
         {
-            this.Error += Activation * (1 - Activation) * (target - Activation);
+            this.Error = Activation * (1 - Activation) * (target - Activation);
             return this.Error;
         }
 

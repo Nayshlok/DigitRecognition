@@ -47,8 +47,8 @@ namespace DigitRecognitionConsole.Model
             foreach (NetConnection nc in Inputs)
             {
                 nc.Weight = nc.Weight + (LEARNING_RATE * Error * nc.Sender.Activation);
-                this.Error = 0;
             }
+            //this.Error = 0;
         }
     }
 }

@@ -117,6 +117,7 @@ namespace DigitRecognitionConsole.Controller
             {
                 int target = n.OutputValue == Item.expectedResult ? 1 : 0;
                 n.CalculateError(target);
+                //n.AdjustWeights();
             }
             BaseNode prevLayer = outputNodes[0];
             while (prevLayer != null)
@@ -199,6 +200,7 @@ namespace DigitRecognitionConsole.Controller
                     {
                         HiddenNode temp = (HiddenNode)nc.Sender;
                         temp.CalculateError();
+                        //temp.AdjustWeights();
                     }
                 }
                 PrevNode = currentNode.Inputs[0].Sender;

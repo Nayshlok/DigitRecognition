@@ -49,6 +49,7 @@
     <Compile Include="Controller\BinaryXORProvider.cs" />
     <Compile Include="Controller\DigitDataReader.cs" />
     <Compile Include="Controller\IDataProvider.cs" />
+    <Compile Include="Controller\IJudge.cs" />
     <Compile Include="Controller\NetworkPersist.cs" />
     <Compile Include="Controller\NeuralNet.cs" />
     <Compile Include="Model\Node\ActivatingNode.cs" />

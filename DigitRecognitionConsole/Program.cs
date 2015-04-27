@@ -17,6 +17,8 @@ namespace DigitRecognitionConsole
         private static readonly string TestingDataPath = @"C:\Users\David Borland\Documents\Capstone\DigitRecognitionConsole\DigitRecognitionConsole\Data\t10k-images.idx3-ubyte";
         private static readonly string TestingLabelPath = @"C:\Users\David Borland\Documents\Capstone\DigitRecognitionConsole\DigitRecognitionConsole\Data\t10k-labels.idx1-ubyte";
 
+        private static double TotalAccuracy;
+
         static void Main(string[] args)
         {
             //IDataProvider provider = new DigitDataReader(TrainingDataPath, TrainingLabelPath);
@@ -32,17 +34,30 @@ namespace DigitRecognitionConsole
             {
                 StoredNetwork = new PersistentNetwork { Index = 0, Network = new NeuralNet(provider.GetNumOfInputs(), provider.GetHiddenLayerSize(), provider.GetPossibleOutputs()) };
             }
+            IDataProvider TestProvider = new BinaryXORProvider();
 
             Console.WriteLine("Current index = " + StoredNetwork.Index);
+            Dictionary<int, AccuracyData> indivdualData = TestNetworkAccuracy(StoredNetwork.Network, TestProvider, 10000);
+            Console.WriteLine("Percentage correct: " + TotalAccuracy + "%");
+            foreach (KeyValuePair<int, AccuracyData> kv in indivdualData)
+            {
+                Console.WriteLine(kv.Key + ": " + kv.Value.correct + " correct of " + kv.Value.total);
+            }
+
             Console.WriteLine("Enter number of images to process per batch");
             int batchSize = int.Parse(Console.ReadLine());
             Console.WriteLine("Enter number of batches");
             int batches = int.Parse(Console.ReadLine());
+            PrintAllWeights(StoredNetwork.Network);
             Stopwatch watch = new Stopwatch();
 
             for (int i = 0; i < batches; i++)
             {
                 watch.Start();
+                if (StoredNetwork.Index >= provider.GetSetSize())
+                {
+                    StoredNetwork.Index = 0;
+                }
                 foreach (DataItem nextItem in provider.GetNextDataItem().Skip(StoredNetwork.Index).Take(batchSize))
                 {
                     StoredNetwork.Network.TrainNetwork(nextItem);
@@ -63,17 +78,17 @@ namespace DigitRecognitionConsole
                 watch.Reset();
                 watch.Start();
                 //IDataProvider TestProvider = new DigitDataReader(TestingDataPath, TestingLabelPath);
-                IDataProvider TestProvider = new BinaryXORProvider();
-                Console.WriteLine("Percentage correct: " + TestNetworkAccuracy(StoredNetwork.Network, TestProvider, 10000) + "%");
+                TestProvider = new BinaryXORProvider();
+                /*Dictionary<int, AccuracyData>*/ indivdualData = TestNetworkAccuracy(StoredNetwork.Network, TestProvider, 10000);
+                Console.WriteLine("Percentage correct: " + TotalAccuracy + "%");
+                foreach (KeyValuePair<int, AccuracyData> kv in indivdualData)
+                {
+                    Console.WriteLine(kv.Key + ": " + kv.Value.correct + " correct of " + kv.Value.total);
+                }
                 watch.Stop();
                 Console.WriteLine("Milliseconds to test: " + watch.ElapsedMilliseconds);
 
             }
-
-            PrintXORTestResults(new byte[] { 1, 1 }, 0, StoredNetwork.Network);
-            PrintXORTestResults(new byte[] { 1, 0 }, 1, StoredNetwork.Network);
-            PrintXORTestResults(new byte[] { 0, 1 }, 1, StoredNetwork.Network);
-            PrintXORTestResults(new byte[] { 0, 0 }, 0, StoredNetwork.Network);
             PrintAllWeights(StoredNetwork.Network);
 
         }
@@ -115,21 +130,40 @@ namespace DigitRecognitionConsole
             }
         }
 
-        public static double TestNetworkAccuracy(NeuralNet net, IDataProvider provider, int testNumber = -1)
+        public static Dictionary<int, AccuracyData> TestNetworkAccuracy(NeuralNet net, IDataProvider provider, int testNumber = -1)
         {
             int setSize = testNumber == -1 ? provider.GetSetSize() : testNumber;
             int CorrectCount = 0;
+            Dictionary<int, AccuracyData> individualOutput = new Dictionary<int,AccuracyData>();
+            foreach (int n in provider.GetPossibleOutputs())
+            {
+                individualOutput[n] = new AccuracyData();
+            }
+
             foreach (DataItem item in provider.GetNextDataItem().Take(setSize))
             {
                 OutputNode Result = net.judgeInput(item.data);
+                individualOutput[item.expectedResult].total++;
                 if (Result.OutputValue == item.expectedResult)
                 {
                     CorrectCount++;
+                    individualOutput[item.expectedResult].correct++;
                 }
             }
-            return (((double)CorrectCount) / ((double)setSize)) * 100;
+            TotalAccuracy = (((double)CorrectCount) / ((double)setSize)) * 100;
+            return individualOutput;
         }
+    }
 
+    class AccuracyData
+    {
+        public int correct;
+        public int total;
+
+        public override string ToString()
+        {
+            return ((double)(correct) / (double)(total)) * 100 + "%, Correct: " + correct + ", Given: " + total;
+        }
     }
 }
 /*
