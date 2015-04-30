@@ -8,17 +8,18 @@ using DigitRecognitionConsole.Model;
 
 namespace DigitRecognitionConsole.Controller
 {
-    public class DigitDataReader : IDataProvider
+    public class DigitProvider : IDataProvider
     {
         private readonly int NUM_OF_DIGITS = 10;
         //Metadata consists of 4 ints, a magic number, the number of images in the file, the number of columns, and the number of rows. 4 ints take 16 bytes, thus the offset.
         private readonly int METADATA_SIZE = 16;
+        private readonly double MAX_PIXEL_INTENSITY = 255;
         private string DataPath;
         private string LabelPath;
         private int NumberOfImages;
         public int ImageSize { get; set; }
 
-        public DigitDataReader(string DataPath, string LabelPath)
+        public DigitProvider(string DataPath, string LabelPath)
         {
             this.DataPath = DataPath;
             this.LabelPath = LabelPath;
@@ -63,11 +64,16 @@ namespace DigitRecognitionConsole.Controller
             }
         }
 
-        private byte[] ReadSingleImage(Stream stream)
+        private double[] ReadSingleImage(Stream stream)
         {
             byte[] image = new byte[ImageSize];
             stream.Read(image, 0, image.Length);
-            return image;
+            double[] normalizedImage = new double[image.Length];
+            for (int i = 0; i < image.Length; i++)
+            {
+                normalizedImage[i] = (double)image[i] / MAX_PIXEL_INTENSITY;
+            }
+            return normalizedImage;
         }
 
         public int ReadInt(Stream stream)
@@ -136,9 +142,9 @@ namespace DigitRecognitionConsole.Controller
         }
 
 
-        public int GetHiddenLayerSize()
+        public int[] GetHiddenLayerSizes()
         {
-            return ImageSize/2;
+            return new int[] { ImageSize/2};
         }
     }
 }

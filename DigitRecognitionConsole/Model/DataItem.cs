@@ -8,7 +8,7 @@ namespace DigitRecognitionConsole.Model
 {
     public class DataItem
     {
-        public byte[] data { get; set; }
+        public double[] data { get; set; }
         public int expectedResult { get; set; }
 
         public override string ToString()
@@ -24,7 +24,7 @@ namespace DigitRecognitionConsole.Model
                 dataString.Append(b);
                 isFirst = false;
             }
-            return dataString.ToString() + ", Expect: " + expectedResult;
+            return ", Expect: " + expectedResult;
         }
 
         public override bool Equals(object obj)

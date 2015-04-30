@@ -13,11 +13,19 @@ namespace DigitRecognitionConsole.Controller
         private readonly int OUTPUT_SIZE = 1;
         private readonly double INACTIVE_THRESHOLD = 0.25;
         private readonly double ACTIVE_THRESHOLD = 0.75;
+        private Dictionary<int, AccuracyData> _Accuracy;
 
         public bool JudgeNetwork(DataItem Item, OutputNode[] outputs)
         {
             TryValidParamters(outputs);
             bool result = (outputs[0].Activation < INACTIVE_THRESHOLD && Item.expectedResult == 0) || (outputs[0].Activation > ACTIVE_THRESHOLD && Item.expectedResult == 1);
+
+            _Accuracy[Item.expectedResult].total++;
+            if (result)
+            {
+                _Accuracy[Item.expectedResult].correct++;
+            }
+
             return result;
         }
 
@@ -35,6 +43,21 @@ namespace DigitRecognitionConsole.Controller
             {
                 throw new Exception("Output size does not match this judge.");
             }
+        }
+
+
+        public void ResetTraining()
+        {
+            _Accuracy = new Dictionary<int, AccuracyData>();
+            for (int i = 0; i < 2; i++)
+            {
+                _Accuracy[i] = new AccuracyData();
+            }
+        }
+
+        public Dictionary<int, AccuracyData> getAccuracy()
+        {
+            return _Accuracy;
         }
     }
 }

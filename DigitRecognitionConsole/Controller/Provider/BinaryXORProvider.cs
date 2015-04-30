@@ -29,8 +29,8 @@ namespace DigitRecognitionConsole.Controller
         {
             for (int i = 0; i < NUMBER_OF_SETS; i++)
             {
-                byte[] data = new byte[] { (byte)rand.Next(2), (byte)rand.Next(2) };
-                int expected = data[0] ^ data[1];
+                double[] data = new double[] { rand.Next(2), rand.Next(2) };
+                int expected = (int)data[0] ^ (int)data[1];
                 yield return new DataItem { data = data, expectedResult = expected };
             }
         }
@@ -40,10 +40,9 @@ namespace DigitRecognitionConsole.Controller
             return NUMBER_OF_SETS;
         }
 
-
-        public int GetHiddenLayerSize()
+        public int[] GetHiddenLayerSizes()
         {
-            return XOR_HIDDEN_SIZE;
+            return new int[] { XOR_HIDDEN_SIZE, XOR_HIDDEN_SIZE };
         }
     }
 }

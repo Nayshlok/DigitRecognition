@@ -37,7 +37,7 @@ namespace DigitRecognitionConsole.Model
             }
 
             //activation = SumOfWeightedActivation;
-            activation = 1 / (1 + Math.Pow(Math.E, -1 * SumOfWeightedActivation));
+            activation = 1 / (1 + Math.Exp(-1 * SumOfWeightedActivation));
 
             return activation;
         }

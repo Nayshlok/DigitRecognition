@@ -10,16 +10,30 @@ namespace DigitRecognitionConsole.Controller
     public class BitAdditionJudge : IJudge
     {
         private readonly int OUTPUT_SIZE = 3;
-        private readonly double INACTIVE_THRESHOLD = 0.25;
         private readonly double ACTIVE_THRESHOLD = 0.75;
+
+        private Dictionary<int, AccuracyData> _Accuracy;
+
+        public BitAdditionJudge()
+        {
+            ResetTraining();
+        }
 
         public bool JudgeNetwork(DataItem Item, OutputNode[] outputs)
         {
             TryValidParamters(outputs);
             int networkValue = NetworkValue(outputs);
-            return networkValue == Item.expectedResult;
-        }
+            bool result = networkValue == Item.expectedResult;
 
+            _Accuracy[Item.expectedResult].total++;
+            if (result)
+            {
+                _Accuracy[Item.expectedResult].correct++;
+            }
+
+            return result;
+        }
+        
         public bool[] TrainingResult(DataItem Item, OutputNode[] outputs)
         {
             TryValidParamters(outputs);
@@ -30,6 +44,20 @@ namespace DigitRecognitionConsole.Controller
                 ShouldActivate[i] = (Item.expectedResult & (1 << outputs.Length - 1 - i)) != 0; 
             }
             return ShouldActivate;
+        }
+
+        public void ResetTraining()
+        {
+            _Accuracy = new Dictionary<int, AccuracyData>();
+            for (int i = 0; i < 7; i++)
+            {
+                _Accuracy[i] = new AccuracyData();
+            }
+        }
+
+        public Dictionary<int, AccuracyData> getAccuracy()
+        {
+            return _Accuracy;
         }
 
         private int NetworkValue(OutputNode[] outputs)

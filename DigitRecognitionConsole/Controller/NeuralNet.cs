@@ -11,10 +11,10 @@ namespace DigitRecognitionConsole.Controller
     public class NeuralNet
     {
         private InputNode[] inputNodes;
-        private OutputNode[] outputNodes;
+        public OutputNode[] outputNodes;
         private BiasNode bias;
 
-        public NeuralNet(int inputs, int HiddenLayersize, int outputs)
+        public NeuralNet(int inputs, int[] HiddenLayerSizes, int outputs)
         {
             if (inputs == 0)
             {
@@ -27,24 +27,33 @@ namespace DigitRecognitionConsole.Controller
             bias = new BiasNode();
             bias.Name = "B";
             inputNodes = new InputNode[inputs];
-            HiddenNode[] Layer1 = new HiddenNode[HiddenLayersize];
+            //HiddenNode[] Layer1 = new HiddenNode[HiddenLayerSizes[0]];
             for (int i = 0; i < inputNodes.Length; i++)
             {
                 inputNodes[i] = new InputNode { Name="I" + i };
             }
-            for (int i = 0; i < Layer1.Length; i++)
-            {
-                Layer1[i] = new HiddenNode { Name = "L" + i };
-            }
+            //for (int i = 0; i < Layer1.Length; i++)
+            //{
+            //    Layer1[i] = new HiddenNode { Name = "L" + i };
+            //}
             outputNodes = new OutputNode[outputs];
             for (int i = 0; i < outputNodes.Length; i++)
             {
                 outputNodes[i] = new OutputNode() { Name = "O" + i };
             }
 
-            EstablishConnections(inputNodes, Layer1);
-            EstablishConnections(Layer1, outputNodes);
-
+            BaseNode[] PreviousLayer = inputNodes;
+            for (int i = 0; i < HiddenLayerSizes.Length; i++)
+            {
+                HiddenNode[] HiddenLayer = new HiddenNode[HiddenLayerSizes[i]];
+                for (int j = 0; j < HiddenLayer.Length; j++)
+                {
+                    HiddenLayer[j] = new HiddenNode { Name = "L(" + i + "," + j + ")"};
+                }
+                EstablishConnections(PreviousLayer, HiddenLayer);
+                PreviousLayer = HiddenLayer;
+            }
+            EstablishConnections(PreviousLayer, outputNodes);
         }
 
         private void EstablishConnections(BaseNode[] SendingNodes, ActivatingNode[] ReceivingNodes)
@@ -62,7 +71,7 @@ namespace DigitRecognitionConsole.Controller
             }
         }
 
-        public OutputNode[] judgeInput(byte[] data)
+        public OutputNode[] judgeInput(double[] data)
         {
             if (data.Length != inputNodes.Length)
             {

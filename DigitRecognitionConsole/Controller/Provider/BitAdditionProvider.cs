@@ -10,7 +10,7 @@ namespace DigitRecognitionConsole.Controller
     public class BitAdditionProvider : IDataProvider
     {
         private readonly int BIT_OUTPUTS = 3;
-        private readonly int BIT_HIDDENSIZE = 3;
+        private readonly int BIT_HIDDENSIZE = 10;
         private readonly int BIT_INPUTS = 4;
         private static Random rand = new Random();
         private readonly int NUMBER_OF_SETS = 1000000;
@@ -29,8 +29,8 @@ namespace DigitRecognitionConsole.Controller
         {
             for (int i = 0; i < NUMBER_OF_SETS; i++)
             {
-                byte[] data = new byte[] { (byte)rand.Next(2), (byte)rand.Next(2), (byte)rand.Next(2), (byte)rand.Next(2) };
-                int expected = (data[0] * 2 + data[1]) + (data[2] * 2 + data[3]);
+                double[] data = new double[] { rand.Next(2), rand.Next(2), rand.Next(2), rand.Next(2) };
+                int expected = (int)((data[0] * 2 + data[1]) + (data[2] * 2 + data[3]));
                 yield return new DataItem { data = data, expectedResult = expected };
             }
         }
@@ -40,9 +40,9 @@ namespace DigitRecognitionConsole.Controller
             return NUMBER_OF_SETS;
         }
 
-        public int GetHiddenLayerSize()
+        public int[] GetHiddenLayerSizes()
         {
-            return BIT_HIDDENSIZE;
+            return new int[] {BIT_HIDDENSIZE};
         }
     }
 }

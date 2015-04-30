@@ -21,8 +21,8 @@ namespace DigitRecognitionConsole
 
         static void Main(string[] args)
         {
-            IDataProvider provider = new DigitDataReader(TrainingDataPath, TrainingLabelPath);
-            //IDataProvider provider = new BinaryXORProvider();
+            IDataProvider provider = new DigitProvider(TrainingDataPath, TrainingLabelPath);
+            //IDataProvider provider = new BitAdditionProvider();
             PersistentNetwork StoredNetwork = null;
             Console.WriteLine("Enter File Name:");
             string FileName = Console.ReadLine();
@@ -30,16 +30,17 @@ namespace DigitRecognitionConsole
             {
                 StoredNetwork = NetworkPersist.LoadNetwork(FileName);
             }
-            catch (FileNotFoundException ex)
+            catch (FileNotFoundException)
             {
-                StoredNetwork = new PersistentNetwork { Index = 0, Network = new NeuralNet(provider.GetNumOfInputs(), provider.GetHiddenLayerSize(), provider.GetPossibleOutputs()) };
+                StoredNetwork = new PersistentNetwork { Index = 0, Network = new NeuralNet(provider.GetNumOfInputs(), provider.GetHiddenLayerSizes(), provider.GetPossibleOutputs()) };
             }
-            IDataProvider TestProvider = new DigitDataReader(TestingDataPath, TestingLabelPath);
-            //XORJudge judge = new XORJudge();
+            IDataProvider TestProvider = new DigitProvider(TestingDataPath, TestingLabelPath);
+            //IDataProvider TestProvider = new BitAdditionProvider();
+
             IJudge judge = new DigitJudge();
 
             Console.WriteLine("Current index = " + StoredNetwork.Index);
-            Dictionary<int, AccuracyData> indivdualData = TestNetworkAccuracy(StoredNetwork.Network, TestProvider, judge, 100);
+            Dictionary<int, AccuracyData> indivdualData = TestNetworkAccuracy(StoredNetwork.Network, TestProvider, judge, 1000);
             Console.WriteLine("Percentage correct: " + TotalAccuracy + "%");
             foreach (KeyValuePair<int, AccuracyData> kv in indivdualData)
             {
@@ -82,9 +83,7 @@ namespace DigitRecognitionConsole
             {
                 watch.Reset();
                 watch.Start();
-                TestProvider = new DigitDataReader(TestingDataPath, TestingLabelPath);
-                //TestProvider = new BinaryXORProvider();
-                /*Dictionary<int, AccuracyData>*/ indivdualData = TestNetworkAccuracy(StoredNetwork.Network, TestProvider, judge, 100);
+                indivdualData = TestNetworkAccuracy(StoredNetwork.Network, TestProvider, judge, 1000);
                 Console.WriteLine("Percentage correct: " + TotalAccuracy + "%");
                 foreach (KeyValuePair<int, AccuracyData> kv in indivdualData)
                 {
@@ -98,64 +97,52 @@ namespace DigitRecognitionConsole
 
         }
 
-        //public static void PrintAllWeights(NeuralNet net)
-        //{
-        //    Console.WriteLine();
-        //    foreach (OutputNode n in net.outputNodes)
-        //    {
-        //        foreach (NetConnection nc in n.Inputs)
-        //        {
-        //            Console.WriteLine(nc);
-        //        }
-        //    }
-        //    foreach (NetConnection n in net.outputNodes[0].Inputs)
-        //    {
-        //        if (n.Sender is ActivatingNode)
-        //        {
-        //            ActivatingNode an = n.Sender as ActivatingNode;
-        //            foreach (NetConnection nc in an.Inputs)
-        //            {
-        //                Console.WriteLine(nc);
-        //            }
-        //        }
-        //    }
-        //    foreach (OutputNode o in net.outputNodes)
-        //    {
-        //        Console.WriteLine(o.Name + " A: " + o.Activation);
-        //    }
-        //}
+        public static void PrintAllWeights(NeuralNet net)
+        {
+            Console.WriteLine();
+            foreach (OutputNode n in net.outputNodes)
+            {
+                foreach (NetConnection nc in n.Inputs)
+                {
+                    Console.WriteLine(nc);
+                }
+            }
+            ActivatingNode previous = net.outputNodes[0];
+            while (previous != null)
+            {
+                foreach (NetConnection n in previous.Inputs)
+                {
+                    if (n.Sender is ActivatingNode)
+                    {
+                        ActivatingNode an = n.Sender as ActivatingNode;
+                        foreach (NetConnection nc in an.Inputs)
+                        {
+                            Console.WriteLine(nc);
+                        }
+                    }
+                }
+                previous = previous.Inputs[0].Sender as ActivatingNode;
+            }
+        }
 
         public static Dictionary<int, AccuracyData> TestNetworkAccuracy(NeuralNet net, IDataProvider provider, IJudge judge, int testNumber = -1)
         {
             int setSize = testNumber == -1 ? provider.GetSetSize() : testNumber;
             int CorrectCount = 0;
-            Dictionary<int, AccuracyData> individualOutput = new Dictionary<int,AccuracyData>();
-            //foreach (int n in provider.GetPossibleOutputs())
-            //{
-            //    individualOutput[n] = new AccuracyData();
-            //}
-
-            foreach (DataItem item in provider.GetNextDataItem().Take(setSize))
-            {
-                OutputNode[] Result = net.judgeInput(item.data);
-                if (judge.JudgeNetwork(item, Result))
+            int index = 0;
+            judge.ResetTraining();
+                foreach (DataItem item in provider.GetNextDataItem().Take(setSize))
                 {
-                    CorrectCount++;
+                    OutputNode[] Result = net.judgeInput(item.data);
+                    bool test = judge.JudgeNetwork(item, Result);
+                    if (test)
+                    {
+                        CorrectCount++;
+                    }
+                    index++;
                 }
-            }
             TotalAccuracy = (((double)CorrectCount) / ((double)setSize)) * 100;
-            return individualOutput;
-        }
-    }
-
-    class AccuracyData
-    {
-        public int correct;
-        public int total;
-
-        public override string ToString()
-        {
-            return ((double)(correct) / (double)(total)) * 100 + "%, Correct: " + correct + ", Given: " + total;
+            return judge.getAccuracy();
         }
     }
 }

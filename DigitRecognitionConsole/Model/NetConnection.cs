@@ -27,6 +27,7 @@ namespace DigitRecognitionConsole.Model
         }
 
         public override string ToString()
+        
         {
             return Sender.Name + " to " + Receiver.Name + "; W = " + Math.Round(Weight, 7);
         }
