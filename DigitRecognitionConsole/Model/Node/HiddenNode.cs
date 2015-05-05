@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DigitRecognitionConsole.Model
+namespace DigitRecognitionDisplay.Model
 {
     [Serializable]
     public class HiddenNode : ActivatingNode
@@ -16,7 +16,7 @@ namespace DigitRecognitionConsole.Model
             {
                 WeightedError += nc.Receiver.Error * nc.Weight;
             }
-            this.Error = Activation * (1 - Activation) * WeightedError;
+            this.Error += Activation * (1 - Activation) * WeightedError;
             return Error;
         }
 

@@ -1,11 +1,11 @@
-﻿using DigitRecognitionConsole.Model;
+﻿using DigitRecognitionDisplay.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DigitRecognitionConsole.Controller
+namespace DigitRecognitionDisplay.Controller
 {
     public class BinaryXORProvider : IDataProvider
     {
@@ -42,7 +42,7 @@ namespace DigitRecognitionConsole.Controller
 
         public int[] GetHiddenLayerSizes()
         {
-            return new int[] { XOR_HIDDEN_SIZE, XOR_HIDDEN_SIZE };
+            return new int[] { XOR_HIDDEN_SIZE };
         }
     }
 }

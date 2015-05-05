@@ -1,18 +1,16 @@
-﻿using DigitRecognitionConsole.Model;
+﻿using DigitRecognitionDisplay.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DigitRecognitionConsole.Controller
+namespace DigitRecognitionDisplay.Controller
 {
     public interface IJudge
     {
         bool JudgeNetwork(DataItem Item, OutputNode[] outputs);
-        bool[] TrainingResult(DataItem Item, OutputNode[] outputs);
-        void ResetTraining();
-        Dictionary<int, AccuracyData> getAccuracy();
-
+        int[] TrainingResult(DataItem Item, OutputNode[] outputs);
+        Dictionary<int, AccuracyData> getEmptyAccuracyInfo();
     }
 }

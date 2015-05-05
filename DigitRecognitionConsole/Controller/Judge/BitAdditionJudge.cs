@@ -3,60 +3,42 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DigitRecognitionConsole.Model;
+using DigitRecognitionDisplay.Model;
 
-namespace DigitRecognitionConsole.Controller
+namespace DigitRecognitionDisplay.Controller
 {
     public class BitAdditionJudge : IJudge
     {
         private readonly int OUTPUT_SIZE = 3;
         private readonly double ACTIVE_THRESHOLD = 0.75;
 
-        private Dictionary<int, AccuracyData> _Accuracy;
-
-        public BitAdditionJudge()
-        {
-            ResetTraining();
-        }
-
         public bool JudgeNetwork(DataItem Item, OutputNode[] outputs)
         {
             TryValidParamters(outputs);
             int networkValue = NetworkValue(outputs);
-            bool result = networkValue == Item.expectedResult;
 
-            _Accuracy[Item.expectedResult].total++;
-            if (result)
-            {
-                _Accuracy[Item.expectedResult].correct++;
-            }
-
-            return result;
+            return networkValue == Item.expectedResult;
         }
         
-        public bool[] TrainingResult(DataItem Item, OutputNode[] outputs)
+        public int[] TrainingResult(DataItem Item, OutputNode[] outputs)
         {
             TryValidParamters(outputs);
             int networkValue = NetworkValue(outputs);
-            bool[] ShouldActivate = new bool[outputs.Length];
+            int[] ShouldActivate = new int[outputs.Length];
             for (int i = 0; i < ShouldActivate.Length; i++)
             {
-                ShouldActivate[i] = (Item.expectedResult & (1 << outputs.Length - 1 - i)) != 0; 
+                ShouldActivate[i] = ((Item.expectedResult & (1 << outputs.Length - 1 - i)) != 0) ? 1 : 0; 
             }
             return ShouldActivate;
         }
 
-        public void ResetTraining()
+        public Dictionary<int, AccuracyData> getEmptyAccuracyInfo()
         {
-            _Accuracy = new Dictionary<int, AccuracyData>();
+            Dictionary<int, AccuracyData> _Accuracy = new Dictionary<int, AccuracyData>();
             for (int i = 0; i < 7; i++)
             {
                 _Accuracy[i] = new AccuracyData();
             }
-        }
-
-        public Dictionary<int, AccuracyData> getAccuracy()
-        {
             return _Accuracy;
         }
 

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
-using DigitRecognitionConsole.Model;
+using DigitRecognitionDisplay.Model;
 
-namespace DigitRecognitionConsole.Controller
+namespace DigitRecognitionDisplay.Controller
 {
     public class DigitProvider : IDataProvider
     {
@@ -144,7 +144,7 @@ namespace DigitRecognitionConsole.Controller
 
         public int[] GetHiddenLayerSizes()
         {
-            return new int[] { ImageSize/2};
+            return new int[] { ImageSize};
         }
     }
 }

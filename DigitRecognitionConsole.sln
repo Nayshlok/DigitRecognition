@@ -5,6 +5,8 @@ VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DigitRecognitionConsole", "DigitRecognitionConsole\DigitRecognitionConsole.csproj", "{E1CA9C12-B2B5-45CE-9DB8-735F6F494CCD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DigitRecognitionDisplay", "DigitRecognitionDisplay\DigitRecognitionDisplay.csproj", "{4C310D82-7E68-49A7-A291-792AD616F7E0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{E1CA9C12-B2B5-45CE-9DB8-735F6F494CCD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E1CA9C12-B2B5-45CE-9DB8-735F6F494CCD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E1CA9C12-B2B5-45CE-9DB8-735F6F494CCD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C310D82-7E68-49A7-A291-792AD616F7E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C310D82-7E68-49A7-A291-792AD616F7E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C310D82-7E68-49A7-A291-792AD616F7E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C310D82-7E68-49A7-A291-792AD616F7E0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

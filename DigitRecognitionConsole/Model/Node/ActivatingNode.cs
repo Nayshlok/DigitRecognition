@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DigitRecognitionConsole.Model
+namespace DigitRecognitionDisplay.Model
 {
     [Serializable]
     public abstract class ActivatingNode : BaseNode
@@ -48,7 +48,7 @@ namespace DigitRecognitionConsole.Model
             {
                 nc.Weight = nc.Weight + (LEARNING_RATE * Error * nc.Sender.Activation);
             }
-            //this.Error = 0;
+             this.Error = 0;
         }
     }
 }

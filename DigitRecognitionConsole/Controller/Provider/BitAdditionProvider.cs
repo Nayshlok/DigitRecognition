@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DigitRecognitionConsole.Model;
+using DigitRecognitionDisplay.Model;
 
-namespace DigitRecognitionConsole.Controller
+namespace DigitRecognitionDisplay.Controller
 {
     public class BitAdditionProvider : IDataProvider
     {
         private readonly int BIT_OUTPUTS = 3;
-        private readonly int BIT_HIDDENSIZE = 10;
+        private readonly int BIT_HIDDENSIZE = 6;
         private readonly int BIT_INPUTS = 4;
         private static Random rand = new Random();
         private readonly int NUMBER_OF_SETS = 1000000;

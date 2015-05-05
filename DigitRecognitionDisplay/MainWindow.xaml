@@ -1,0 +1,20 @@
+﻿<Window x:Class="DigitRecognitionDisplay.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MainWindow" Height="450" Width="1325">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1025"/>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <DockPanel>
+            <Label DockPanel.Dock="Top" HorizontalAlignment="Center">Mean Sum Error</Label>
+            <Label DockPanel.Dock="Left" VerticalAlignment="Center">MSE</Label>
+            <Label DockPanel.Dock="Bottom" HorizontalAlignment="Center">Epoch</Label>
+            <Canvas Name="MSEGraph" Width="975" Height="350" />
+        </DockPanel>
+        <StackPanel Name="AccuracyInfo" Grid.Column="1" Orientation="Vertical">
+            <Label HorizontalAlignment="Center">Final data</Label>
+        </StackPanel>
+    </Grid>
+</Window>

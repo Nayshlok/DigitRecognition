@@ -3,18 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DigitRecognitionConsole.Model;
+using DigitRecognitionDisplay.Model;
 
-namespace DigitRecognitionConsole.Controller
+namespace DigitRecognitionDisplay.Controller
 {
     [Serializable]
     public class NeuralNet
     {
+        private IJudge judge;
         private InputNode[] inputNodes;
         public OutputNode[] outputNodes;
         private BiasNode bias;
 
-        public NeuralNet(int inputs, int[] HiddenLayerSizes, int outputs)
+        public NeuralNet(IJudge judge, int inputs, int[] HiddenLayerSizes, int outputs)
         {
             if (inputs == 0)
             {
@@ -24,18 +25,14 @@ namespace DigitRecognitionConsole.Controller
             {
                 throw new Exception("You must have outputs");
             }
+            this.judge = judge;
             bias = new BiasNode();
             bias.Name = "B";
             inputNodes = new InputNode[inputs];
-            //HiddenNode[] Layer1 = new HiddenNode[HiddenLayerSizes[0]];
             for (int i = 0; i < inputNodes.Length; i++)
             {
                 inputNodes[i] = new InputNode { Name="I" + i };
             }
-            //for (int i = 0; i < Layer1.Length; i++)
-            //{
-            //    Layer1[i] = new HiddenNode { Name = "L" + i };
-            //}
             outputNodes = new OutputNode[outputs];
             for (int i = 0; i < outputNodes.Length; i++)
             {
@@ -53,6 +50,7 @@ namespace DigitRecognitionConsole.Controller
                 EstablishConnections(PreviousLayer, HiddenLayer);
                 PreviousLayer = HiddenLayer;
             }
+
             EstablishConnections(PreviousLayer, outputNodes);
         }
 
@@ -91,12 +89,12 @@ namespace DigitRecognitionConsole.Controller
             return outputNodes;
         }
 
-        public void TrainNetwork(bool[] shouldActivate)
+        public void TrainNetwork(DataItem item)
         {
+            int[] shouldActivate = judge.TrainingResult(item, this.judgeInput(item.data));
             for (int i = 0; i < outputNodes.Length; i++)
             {
-                int target = shouldActivate[i] ? 1 : 0;
-                outputNodes[i].CalculateError(target);
+                outputNodes[i].CalculateError(shouldActivate[i]);
             }
             BaseNode prevLayer = outputNodes[0];
             while (prevLayer != null)
@@ -115,50 +113,37 @@ namespace DigitRecognitionConsole.Controller
             }
         }
 
-        //public void BatchTrainNetwork(IEnumerable<DataItem> items)
-        //{
-        //    double error = 0;
-        //    foreach (DataItem Item in items)
-        //    {
-        //        if (Item.data.Length != inputNodes.Length)
-        //        {
-        //            throw new Exception("The incoming data does not fit the network.");
-        //        }
-        //        bias.Activate();
-        //        for (int i = 0; i < inputNodes.Length; i++)
-        //        {
-        //            inputNodes[i].inputValue = Item.data[i];
-        //            inputNodes[i].Activate();
-        //        }
-        //        BaseNode nextLayer = inputNodes[0];
-        //        while (nextLayer != null)
-        //        {
-        //            nextLayer = ActivateNextLayer(nextLayer);
-        //        }
-        //        foreach (OutputNode n in outputNodes)
-        //        {
-        //            int target = n.OutputValue == Item.expectedResult ? 1 : 0;
-        //            n.CalculateError(target);
-        //        }
-        //        BaseNode prevLayer = outputNodes[0];
-        //        while (prevLayer != null)
-        //        {
-        //            prevLayer = CalculatePreviousError(prevLayer);
-        //        }
-        //    }
+        public void BatchTrainNetwork(IEnumerable<DataItem> items)
+        {
+            double error = 0;
+            foreach (DataItem Item in items)
+            {
+                int[] shouldActivate = judge.TrainingResult(Item, this.judgeInput(Item.data));
 
-        //    foreach (OutputNode n in outputNodes)
-        //    {
-        //        n.AdjustWeights();
-        //    }
-        //    BaseNode previous = outputNodes[0];
-        //    while (previous != null)
-        //    {
-        //        previous = AdjustPreviousWeight(previous);
-        //    }
-        //}
 
-        public BaseNode ActivateNextLayer(BaseNode node)
+                for(int i = 0; i < outputNodes.Length; i++)
+                {
+                    outputNodes[i].CalculateError(shouldActivate[i]);
+                }
+                BaseNode prevLayer = outputNodes[0];
+                while (prevLayer != null)
+                {
+                    prevLayer = CalculatePreviousError(prevLayer);
+                }
+            }
+
+            foreach (OutputNode n in outputNodes)
+            {
+                n.AdjustWeights();
+            }
+            BaseNode previous = outputNodes[0];
+            while (previous != null)
+            {
+                previous = AdjustPreviousWeight(previous);
+            }
+        }
+
+        private BaseNode ActivateNextLayer(BaseNode node)
         {
             foreach (NetConnection nc in node.Outputs)
             {
@@ -167,7 +152,7 @@ namespace DigitRecognitionConsole.Controller
             return node.Outputs.Count == 0 ? null: node.Outputs[0].Receiver;
         }
 
-        public BaseNode CalculatePreviousError(BaseNode startNode)
+        private BaseNode CalculatePreviousError(BaseNode startNode)
         {
             BaseNode PrevNode = null;
             if (startNode is ActivatingNode)
@@ -188,7 +173,7 @@ namespace DigitRecognitionConsole.Controller
             return PrevNode;
         }
 
-        public BaseNode AdjustPreviousWeight(BaseNode startNode)
+        private BaseNode AdjustPreviousWeight(BaseNode startNode)
         {
             BaseNode PrevNode = null;
             if (startNode is ActivatingNode)
