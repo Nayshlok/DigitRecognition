@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DigitRecognitionDisplay.Model;
-using DigitRecognitionDisplay.Controller;
+using DigitRecognitionConsole.Model;
+using DigitRecognitionConsole.Controller;
 using System.Diagnostics;
 using System.IO;
 
-namespace DigitRecognitionDisplay
+namespace DigitRecognitionConsole
 {
     public class Program
     {
@@ -20,13 +20,13 @@ namespace DigitRecognitionDisplay
         static void Main(string[] args)
         {
             AccuracyFinder accuracy = new AccuracyFinder();
-            IDataProvider provider = new DigitProvider(TrainingDataPath, TrainingLabelPath);
-            //IDataProvider provider = new BinaryXORProvider();
+            //IDataProvider provider = new DigitProvider(TrainingDataPath, TrainingLabelPath);
+            IDataProvider provider = new BinaryXORProvider();
 
-            IDataProvider TestProvider = new DigitProvider(TestingDataPath, TestingLabelPath);
-            //IDataProvider TestProvider = new BinaryXORProvider();
+            //IDataProvider TestProvider = new DigitProvider(TestingDataPath, TestingLabelPath);
+            IDataProvider TestProvider = new BinaryXORProvider();
 
-            IJudge judge = new DigitJudge();
+            IJudge judge = new XORJudge();
 
             PersistentNetwork StoredNetwork = null;
             Console.WriteLine("Enter File Name:");
@@ -42,6 +42,17 @@ namespace DigitRecognitionDisplay
 
             Console.WriteLine("Current index = " + StoredNetwork.Index);
             PrintAccuracy(accuracy, accuracy.TestNetworkAccuracy(StoredNetwork.Network, TestProvider, judge, 100));
+
+            NetworkPersist.SaveNetwork(StoredNetwork, FileName);
+
+            for (int i = 0; i < 10; i++)
+            {
+                double[] data = SelectData();
+                Console.WriteLine("enter expected");
+                int expected = Console.Read() - 48;
+                Console.ReadLine();
+                StoredNetwork.Network.TrainNetwork(new DataItem{ data = data, expectedResult = expected});
+            }
 
             Console.WriteLine("Enter number of images to process per batch");
             int batchSize = int.Parse(Console.ReadLine());
@@ -110,6 +121,19 @@ namespace DigitRecognitionDisplay
             {
                 
             }
+        }
+
+        static double[] SelectData()
+        {
+            Console.WriteLine("Enter two numbers");
+            string valueString = Console.ReadLine();
+            string[] splitValues = valueString.Split(new string[]{","}, StringSplitOptions.RemoveEmptyEntries);
+            double[] values = new double[splitValues.Length];
+            for (int i = 0; i < values.Length; i++)
+            {
+                double.TryParse(splitValues[i], out values[i]);
+            }
+            return values;
         }
 
         static void PrintAccuracy(AccuracyFinder accuracy, Dictionary<int, AccuracyData> individualData)

@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
-using DigitRecognitionDisplay.Model;
+using DigitRecognitionConsole.Model;
 
-namespace DigitRecognitionDisplay.Controller
+namespace DigitRecognitionConsole.Controller
 {
     public class NetworkPersist
     {

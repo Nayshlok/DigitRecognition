@@ -1,11 +1,11 @@
-﻿using DigitRecognitionDisplay.Model;
+﻿using DigitRecognitionConsole.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DigitRecognitionDisplay.Controller
+namespace DigitRecognitionConsole.Controller
 {
     public interface IDataProvider
     {

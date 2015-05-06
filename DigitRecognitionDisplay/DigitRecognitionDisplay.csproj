@@ -7,7 +7,7 @@
     <ProjectGuid>{4C310D82-7E68-49A7-A291-792AD616F7E0}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DigitRecognitionDisplay</RootNamespace>
+    <RootNamespace>DigitRecognitionConsole</RootNamespace>
     <AssemblyName>DigitRecognitionDisplay</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

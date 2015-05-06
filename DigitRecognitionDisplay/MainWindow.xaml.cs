@@ -12,8 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using DigitRecognitionDisplay.Controller;
-using DigitRecognitionDisplay.Model;
+using DigitRecognitionConsole.Controller;
+using DigitRecognitionConsole.Model;
 using System.Windows.Threading;
 
 namespace DigitRecognitionDisplay
@@ -23,9 +23,9 @@ namespace DigitRecognitionDisplay
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly int NUMBER_OF_EPOCHS = 175;
-        private readonly int EPOCH_SIZE = 500;
-        private readonly int POINT_RADIUS = 5;
+        private readonly int NUMBER_OF_EPOCHS = 1000;
+        private readonly int EPOCH_SIZE = 300;
+        private readonly int POINT_RADIUS = 4;
 
         private static double height;
         private static double EpochDistance;
@@ -43,11 +43,11 @@ namespace DigitRecognitionDisplay
             DrawVerticalScale(1.0, 0.0, 10);
 
             timer = new DispatcherTimer();
-            timer.Interval = new TimeSpan(1000000);
+            timer.Interval = new TimeSpan(10000);
             timer.Tick += OnTimedEvent;
-            IDataProvider provider = new BitAdditionProvider();
+            IDataProvider provider = new BinaryXORProvider();
             //IDataProvider provider = new DigitProvider(Program.TestingDataPath, Program.TestingLabelPath);
-            IJudge judge = new BitAdditionJudge();
+            IJudge judge = new XORJudge();
             driver = new Driver(provider, judge);
 
             height = MSEGraph.Height;
@@ -75,7 +75,7 @@ namespace DigitRecognitionDisplay
             {
                 Label totalAccuracy = new Label();
                 //IDataProvider testProvider = new DigitProvider(Program.TrainingDataPath, Program.TrainingLabelPath);
-                IDataProvider testProvider = new BitAdditionProvider();
+                IDataProvider testProvider = new BinaryXORProvider();
 
                 var testData = driver.TestNetwork(testProvider, 200);
                 totalAccuracy.Content = "Total Accuracy: " + driver.TotalAccuracy;

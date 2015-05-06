@@ -7,7 +7,7 @@
     <ProjectGuid>{E1CA9C12-B2B5-45CE-9DB8-735F6F494CCD}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DigitRecognitionDisplay</RootNamespace>
+    <RootNamespace>DigitRecognitionConsole</RootNamespace>
     <AssemblyName>DigitRecognitionConsole</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

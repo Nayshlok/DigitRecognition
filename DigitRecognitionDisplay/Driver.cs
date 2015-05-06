@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DigitRecognitionDisplay.Model;
-using DigitRecognitionDisplay.Controller;
+using DigitRecognitionConsole.Model;
+using DigitRecognitionConsole.Controller;
 
-namespace DigitRecognitionDisplay.Controller
+namespace DigitRecognitionDisplay
 {
     public class Driver
     {

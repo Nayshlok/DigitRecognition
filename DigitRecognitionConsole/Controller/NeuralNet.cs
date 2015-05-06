@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DigitRecognitionDisplay.Model;
+using DigitRecognitionConsole.Model;
 
-namespace DigitRecognitionDisplay.Controller
+namespace DigitRecognitionConsole.Controller
 {
     [Serializable]
     public class NeuralNet

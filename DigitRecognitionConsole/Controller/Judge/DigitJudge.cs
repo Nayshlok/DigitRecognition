@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DigitRecognitionDisplay.Model;
+using DigitRecognitionConsole.Model;
 using System.IO;
 
-namespace DigitRecognitionDisplay.Controller
+namespace DigitRecognitionConsole.Controller
 {
+    [Serializable]
     public class DigitJudge : IJudge
     {
         private readonly int OUTPUT_SIZE = 10;
