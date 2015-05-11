@@ -21,12 +21,11 @@ namespace DigitRecognitionConsole
         {
             AccuracyFinder accuracy = new AccuracyFinder();
             //IDataProvider provider = new DigitProvider(TrainingDataPath, TrainingLabelPath);
-            IDataProvider provider = new BinaryXORProvider();
-
+            IDataProvider provider = new BitAdditionProvider();
             //IDataProvider TestProvider = new DigitProvider(TestingDataPath, TestingLabelPath);
-            IDataProvider TestProvider = new BinaryXORProvider();
+            IDataProvider TestProvider = new BitAdditionProvider();
 
-            IJudge judge = new XORJudge();
+            IJudge judge = new BitAdditionJudge();
 
             PersistentNetwork StoredNetwork = null;
             Console.WriteLine("Enter File Name:");
@@ -45,14 +44,14 @@ namespace DigitRecognitionConsole
 
             NetworkPersist.SaveNetwork(StoredNetwork, FileName);
 
-            for (int i = 0; i < 10; i++)
-            {
-                double[] data = SelectData();
-                Console.WriteLine("enter expected");
-                int expected = Console.Read() - 48;
-                Console.ReadLine();
-                StoredNetwork.Network.TrainNetwork(new DataItem{ data = data, expectedResult = expected});
-            }
+            //for (int i = 0; i < 10; i++)
+            //{
+            //    double[] data = SelectData();
+            //    Console.WriteLine("enter expected");
+            //    int expected = Console.Read() - 48;
+            //    Console.ReadLine();
+            //    StoredNetwork.Network.TrainNetwork(new DataItem{ data = data, expectedResult = expected});
+            //}
 
             Console.WriteLine("Enter number of images to process per batch");
             int batchSize = int.Parse(Console.ReadLine());

@@ -1,0 +1,27 @@
+﻿<Window x:Class="NetworkWeightViewer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MainWindow" Height="550" Width="825">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="150"/>
+                <RowDefinition Height="70"/>
+                <RowDefinition Height="70"/>
+                <RowDefinition Height="70"/>
+            </Grid.RowDefinitions>
+            <StackPanel Name="InputOptions" Orientation="Vertical"></StackPanel>
+            <StackPanel Orientation="Vertical" Grid.Row="1">
+                <Label>Expected Result</Label>
+                <TextBox Name="ExpectedValue" Margin="10"></TextBox>
+            </StackPanel>
+            <Button Grid.Row="2" Margin="15, 15" Click="Button_Click">Step</Button>
+            <Button Grid.Row="3" Margin="15, 15" Click="Button_Click_1">Test</Button>
+        </Grid> 
+        <StackPanel Name="NetworkDisplay" Orientation="Horizontal" Grid.Column="1"></StackPanel>
+    </Grid>
+</Window>

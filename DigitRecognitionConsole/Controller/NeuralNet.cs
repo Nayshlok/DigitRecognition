@@ -11,7 +11,7 @@ namespace DigitRecognitionConsole.Controller
     public class NeuralNet
     {
         private IJudge judge;
-        private InputNode[] inputNodes;
+        public InputNode[] inputNodes;
         public OutputNode[] outputNodes;
         private BiasNode bias;
 

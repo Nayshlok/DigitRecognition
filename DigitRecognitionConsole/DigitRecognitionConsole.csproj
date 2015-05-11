@@ -73,7 +73,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="Model\App.config" />
     <None Include="Data\t10k-images.idx3-ubyte" />
     <None Include="Data\t10k-labels.idx1-ubyte" />
     <None Include="Data\train-images.idx3-ubyte" />

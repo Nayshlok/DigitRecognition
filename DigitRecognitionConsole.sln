@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DigitRecognitionConsole", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DigitRecognitionDisplay", "DigitRecognitionDisplay\DigitRecognitionDisplay.csproj", "{4C310D82-7E68-49A7-A291-792AD616F7E0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetworkWeightViewer", "NetworkWeightViewer\NetworkWeightViewer.csproj", "{81F9A8BE-13ED-4653-AC57-7B854DD14AC6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{4C310D82-7E68-49A7-A291-792AD616F7E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4C310D82-7E68-49A7-A291-792AD616F7E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4C310D82-7E68-49A7-A291-792AD616F7E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81F9A8BE-13ED-4653-AC57-7B854DD14AC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81F9A8BE-13ED-4653-AC57-7B854DD14AC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81F9A8BE-13ED-4653-AC57-7B854DD14AC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81F9A8BE-13ED-4653-AC57-7B854DD14AC6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

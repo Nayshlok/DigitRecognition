@@ -9,7 +9,7 @@ namespace DigitRecognitionConsole.Model
     [Serializable]
     public abstract class BaseNode
     {
-        protected static readonly double LEARNING_RATE = 0.01;
+        protected static readonly double LEARNING_RATE = 0.5;
 
         public string Name { get; set; }
 

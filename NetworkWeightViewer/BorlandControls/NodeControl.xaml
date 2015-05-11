@@ -1,0 +1,25 @@
+﻿<UserControl x:Class="NetworkWeightViewer.BorlandControls.NodeControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="100" d:DesignWidth="200">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Label Name="ObjectType" HorizontalAlignment="Right" VerticalAlignment="Center" Content="{Binding Path=_ObjectType}"></Label>
+        <Label Name="ObjectName" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Content="{Binding Path=_ObjectName}"></Label>
+        <Label Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Center">Error</Label>
+        <Label Name="ErrorValue" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Content="{Binding Path=Error, UpdateSourceTrigger=PropertyChanged}"></Label>
+        <Label Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Center">Activation</Label>
+        <Label Name="ActivationValue" Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" Content="{Binding Path=Activation, UpdateSourceTrigger=PropertyChanged}"></Label>
+    </Grid>
+</UserControl>
