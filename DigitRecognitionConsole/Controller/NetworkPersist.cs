@@ -11,25 +11,23 @@ namespace DigitRecognitionConsole.Controller
 {
     public class NetworkPersist
     {
-        private static readonly string FILE_PATH = @"..\..\Data\";
-
-        public static void SaveNetwork(PersistentNetwork network, string fileName)
+        public static void SaveNetwork(PersistentNetwork network, string fileName, string filePath = @"..\..\Data\")
         {
             if (fileName.ToLower() != "nofile")
             {
                 BinaryFormatter formatter = new BinaryFormatter();
-                using (FileStream stream = new FileStream(FILE_PATH + fileName + ".ntw", FileMode.OpenOrCreate))
+                using (FileStream stream = new FileStream(filePath + fileName + ".ntw", FileMode.OpenOrCreate))
                 {
                     formatter.Serialize(stream, network);
                 }
             }
         }
 
-        public static PersistentNetwork LoadNetwork(string fileName)
+        public static PersistentNetwork LoadNetwork(string fileName, string filePath = @"..\..\Data\")
         {
             PersistentNetwork network = null;
             BinaryFormatter formatter = new BinaryFormatter();
-            using (FileStream stream = new FileStream(FILE_PATH + fileName + ".ntw", FileMode.Open))
+            using (FileStream stream = new FileStream(filePath+ fileName + ".ntw", FileMode.Open))
             {
                 network = (PersistentNetwork)formatter.Deserialize(stream);
             }

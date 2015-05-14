@@ -39,10 +39,10 @@ namespace NetworkWeightViewer
             judge = new XORJudge();
             net = new NeuralNet(judge, provider.GetNumOfInputs(), provider.GetHiddenLayerSizes(), provider.GetPossibleOutputs());
 
-            foreach (DataItem nextItem in provider.GetNextDataItem().Take(provider.GetSetSize()))
-            {
-                net.TrainNetwork(nextItem);
-            }
+            //foreach (DataItem nextItem in provider.GetNextDataItem().Take(provider.GetSetSize()))
+            //{
+            //    net.TrainNetwork(nextItem);
+            //}
 
             InitializeComponent();
 

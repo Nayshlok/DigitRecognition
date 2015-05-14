@@ -19,13 +19,16 @@ namespace DigitRecognitionConsole
 
         static void Main(string[] args)
         {
-            AccuracyFinder accuracy = new AccuracyFinder();
-            //IDataProvider provider = new DigitProvider(TrainingDataPath, TrainingLabelPath);
-            IDataProvider provider = new BitAdditionProvider();
-            //IDataProvider TestProvider = new DigitProvider(TestingDataPath, TestingLabelPath);
-            IDataProvider TestProvider = new BitAdditionProvider();
+            //MultinetProgram program = new MultinetProgram();
+            //program.Run();
 
-            IJudge judge = new BitAdditionJudge();
+            AccuracyFinder accuracy = new AccuracyFinder();
+            IDataProvider provider = new DigitProvider(TrainingDataPath, TrainingLabelPath);
+            //IDataProvider provider = new BinaryXORProvider();
+            IDataProvider TestProvider = new DigitProvider(TestingDataPath, TestingLabelPath);
+            IDataProvider TestProvider2 = new DigitProvider(TrainingDataPath, TrainingLabelPath);
+            //IDataProvider TestProvider = new BinaryXORProvider();
+            IJudge judge = new DigitJudge();
 
             PersistentNetwork StoredNetwork = null;
             Console.WriteLine("Enter File Name:");
@@ -57,69 +60,55 @@ namespace DigitRecognitionConsole
             int batchSize = int.Parse(Console.ReadLine());
             Console.WriteLine("Enter number of batches");
             int batches = int.Parse(Console.ReadLine());
+            //int batches = 1;
             //PrintAllWeights(StoredNetwork.Network);
-            Stopwatch watch = new Stopwatch();
-
-            for (int i = 0; i < batches; i++)
+            using (StreamWriter writer = new StreamWriter(@"..\..\Data\OneSlowNetworkRecord.txt", true))
             {
-                watch.Start();
-                if (StoredNetwork.Index >= provider.GetSetSize())
+                Stopwatch watch = new Stopwatch();
+                int endBatchSize = batchSize % provider.GetSetSize();
+                batches += batchSize / provider.GetSetSize();
+
+                for (int i = 0; i < batches; i++)
                 {
-                    StoredNetwork.Index = 0;
+                    watch.Start();
+                    if (StoredNetwork.Index >= provider.GetSetSize())
+                    {
+                        StoredNetwork.Index = 0;
+                    }
+                    foreach (DataItem nextItem in provider.GetDataItems().Skip(StoredNetwork.Index).Take(i == batches - 1 ? endBatchSize : batchSize))
+                    {
+                        StoredNetwork.Network.TrainNetwork(nextItem);
+                    }
+                    //StoredNetwork.Network.BatchTrainNetwork(provider.GetNextDataItem().Skip(StoredNetwork.Index).Take(batchSize));
+
+                    StoredNetwork.Index += batchSize;
+                    NetworkPersist.SaveNetwork(StoredNetwork, FileName);
+                    watch.Stop();
+                    Console.WriteLine("Milliseconds to process: " + watch.ElapsedMilliseconds);
+                    watch.Reset();
+
+                    accuracy.TestNetworkAccuracy(StoredNetwork.Network, TestProvider, judge);
+                    writer.Write(i + ", " + accuracy.TotalAccuracy);
+                    Console.WriteLine("standard test done");
+                    accuracy.TestNetworkAccuracy(StoredNetwork.Network, TestProvider2, judge, 10000);
+                    writer.WriteLine(", " + accuracy.TotalAccuracy);
                 }
-                foreach (DataItem nextItem in provider.GetNextDataItem().Skip(StoredNetwork.Index).Take(batchSize))
-                {
-                    StoredNetwork.Network.TrainNetwork(nextItem);
-                }
-                //StoredNetwork.Network.BatchTrainNetwork(provider.GetNextDataItem().Skip(StoredNetwork.Index).Take(batchSize));
 
-                StoredNetwork.Index += batchSize;
-                NetworkPersist.SaveNetwork(StoredNetwork, FileName);
-                watch.Stop();
-                Console.WriteLine("Milliseconds to process: " + watch.ElapsedMilliseconds);
-                watch.Reset();
+                //Console.WriteLine("Test?");
+                //string response = Console.ReadLine();
+                //if (response == "y")
+                //{
+                //    watch.Reset();
+                //    watch.Start();
+                //    PrintAccuracy(accuracy, accuracy.TestNetworkAccuracy(StoredNetwork.Network, TestProvider, judge, 10000));
 
-            }
+                //    watch.Stop();
+                //    Console.WriteLine("Milliseconds to test: " + watch.ElapsedMilliseconds);
 
-
-            Console.WriteLine("Test?");
-            string response = Console.ReadLine();
-            if (response == "y")
-            {
-                watch.Reset();
-                watch.Start();
-                PrintAccuracy(accuracy, accuracy.TestNetworkAccuracy(StoredNetwork.Network, TestProvider, judge));
-
-                watch.Stop();
-                Console.WriteLine("Milliseconds to test: " + watch.ElapsedMilliseconds);
-
+                //}
             }
             //PrintAllWeights(StoredNetwork.Network);
 
-        }
-
-        static void manyNeuralNetworks()
-        {
-            AccuracyFinder accuracy = new AccuracyFinder();
-            IDataProvider provider = new DigitProvider(TrainingDataPath, TrainingLabelPath);
-            //IDataProvider provider = new BinaryXORProvider();
-
-            IDataProvider TestProvider = new DigitProvider(TestingDataPath, TestingLabelPath);
-            //IDataProvider TestProvider = new BinaryXORProvider();
-
-            IJudge judge = new DigitJudge();
-
-            NeuralNet[] networks = new NeuralNet[10];
-            for (int i = 0; i < networks.Length; i++)
-            {
-                IJudge indiviualJudge = new SingleDigitJudge(i);
-                networks[i] = new NeuralNet(indiviualJudge, provider.GetNumOfInputs(), provider.GetHiddenLayerSizes(), 1);
-            }
-
-            foreach (DataItem nextItem in provider.GetNextDataItem().Take(100))
-            {
-                
-            }
         }
 
         static double[] SelectData()

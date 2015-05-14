@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DigitRecognitionConsole.Model;
+using System.IO;
 
 namespace DigitRecognitionConsole.Controller
 {
@@ -16,15 +17,24 @@ namespace DigitRecognitionConsole.Controller
             int setSize = testNumber == -1 ? provider.GetSetSize() : testNumber;
             int CorrectCount = 0;
             Dictionary<int, AccuracyData> accuracyInfo = judge.getEmptyAccuracyInfo();
-            foreach (DataItem item in provider.GetNextDataItem().Take(setSize))
+            int index = 0;
+            DigitJudge digitJudge = (DigitJudge)judge;
+            using (StreamWriter writer = new StreamWriter(@"..\..\Data\MissedCharacter.txt"))
             {
-                OutputNode[] Result = net.judgeInput(item.data);
-                bool test = judge.JudgeNetwork(item, Result);
-                accuracyInfo[item.expectedResult].total++;
-                if (test)
+                foreach (DataItem item in provider.GetDataItems().Take(setSize))
                 {
-                    CorrectCount++;
-                    accuracyInfo[item.expectedResult].correct++;
+                    OutputNode[] Result = net.judgeInput(item.data);
+                    accuracyInfo[item.expectedResult].total++;
+                    if (digitJudge.JudgeNetwork(item, Result, writer))
+                    {
+                        CorrectCount++;
+                        accuracyInfo[item.expectedResult].correct++;
+                    }
+                    else
+                    {
+                        writer.Write(index + ", ");
+                    }
+                    index++;
                 }
             }
             TotalAccuracy = (((double)CorrectCount) / ((double)setSize)) * 100;

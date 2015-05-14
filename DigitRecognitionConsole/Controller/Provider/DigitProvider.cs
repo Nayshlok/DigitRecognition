@@ -49,24 +49,45 @@ namespace DigitRecognitionConsole.Controller
             return ImageSize;
         }
 
-        public IEnumerable<DataItem> GetNextDataItem()
+        public IEnumerable<DataItem> GetDataItems()
         {
             DataItem image = null;
 
             for (int i = 0; i < NumberOfImages; i++)
             {
+                int label = FindLabel(i);
                 using (FileStream stream = new FileStream(DataPath, FileMode.Open))
                 {
-                    stream.Seek((i * ImageSize) + METADATA_SIZE, SeekOrigin.Begin);
-                    image = new DataItem { data = ReadSingleImage(stream), expectedResult = FindLabel(i) };
+                    image = new DataItem { data = ReadSingleImage(stream, i), expectedResult = label };
                 }
                 yield return image;
             }
         }
 
-        private double[] ReadSingleImage(Stream stream)
+
+        public IEnumerable<DataItem> GetConditionalDataItems(Predicate<int> predicate)
+        {
+            DataItem image = null;
+
+            for (int i = 0; i < NumberOfImages; i++)
+            {
+                int label = FindLabel(i);
+                if (!predicate(label))
+                {
+                    continue;
+                }
+                using (FileStream stream = new FileStream(DataPath, FileMode.Open))
+                {
+                    image = new DataItem { data = ReadSingleImage(stream, i), expectedResult = label };
+                }
+                yield return image;
+            }
+        }
+
+        private double[] ReadSingleImage(Stream stream, int index)
         {
             byte[] image = new byte[ImageSize];
+            stream.Seek((index * ImageSize) + METADATA_SIZE, SeekOrigin.Begin);
             stream.Read(image, 0, image.Length);
             double[] normalizedImage = new double[image.Length];
             for (int i = 0; i < image.Length; i++)
@@ -144,7 +165,8 @@ namespace DigitRecognitionConsole.Controller
 
         public int[] GetHiddenLayerSizes()
         {
-            return new int[] { ImageSize};
+            return new int[] { ImageSize/2};
         }
+
     }
 }

@@ -23,8 +23,8 @@ namespace DigitRecognitionDisplay
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly int NUMBER_OF_EPOCHS = 1000;
-        private readonly int EPOCH_SIZE = 300;
+        private readonly int NUMBER_OF_EPOCHS = 100;
+        private readonly int EPOCH_SIZE = 100;
         private readonly int POINT_RADIUS = 4;
 
         private static double height;
@@ -96,8 +96,8 @@ namespace DigitRecognitionDisplay
             point.Width = POINT_RADIUS;
             point.Height = POINT_RADIUS;
             point.Fill = new SolidColorBrush(Colors.DarkBlue);
-            double topValue = (1 - MSE) * height;
-            Canvas.SetTop(point, (1 - MSE) * height);
+            double topValue = (MSE) * height;
+            Canvas.SetTop(point, topValue);
             Canvas.SetLeft(point, (Epoch * EpochDistance) + 25);
             MSEGraph.Children.Add(point);
             return point;

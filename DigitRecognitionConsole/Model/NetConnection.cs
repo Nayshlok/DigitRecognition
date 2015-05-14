@@ -14,7 +14,20 @@ namespace DigitRecognitionConsole.Model
         private static Random rand = new Random();
         public BaseNode Sender { get; set; }
         public BaseNode Receiver { get; set; }
-        public double Weight { get; set; }
+        private double _Weight;
+        public double Weight
+        {
+            get
+            {
+                return _Weight;
+            }
+            set
+            {
+                PreviousChange = _Weight - value;
+                _Weight = value;
+            }
+        }
+        public double PreviousChange { get; set; }
         //public double Activation { get; set; }
         //public double Error { get; set; }
 

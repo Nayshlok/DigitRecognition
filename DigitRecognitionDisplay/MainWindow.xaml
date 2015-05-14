@@ -8,8 +8,8 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <DockPanel>
-            <Label DockPanel.Dock="Top" HorizontalAlignment="Center">Mean Sum Error</Label>
-            <Label DockPanel.Dock="Left" VerticalAlignment="Center">MSE</Label>
+            <Label DockPanel.Dock="Top" HorizontalAlignment="Center">Accuracy</Label>
+            <Label DockPanel.Dock="Left" VerticalAlignment="Center"></Label>
             <Label DockPanel.Dock="Bottom" HorizontalAlignment="Center">Epoch</Label>
             <Canvas Name="MSEGraph" Width="975" Height="350" />
         </DockPanel>

@@ -13,7 +13,7 @@ namespace DigitRecognitionConsole.Controller
         private readonly int XOR_INPUTS = 2;
         private readonly int XOR_HIDDEN_SIZE = 3;
         private readonly int XOR_OUTPUTS = 1;
-        private readonly int NUMBER_OF_SETS = 1000000;
+        private readonly int NUMBER_OF_SETS = 100000;
 
         public int GetPossibleOutputs()
         {
@@ -25,7 +25,7 @@ namespace DigitRecognitionConsole.Controller
             return XOR_INPUTS;
         }
 
-        public IEnumerable<DataItem> GetNextDataItem()
+        public IEnumerable<DataItem> GetDataItems()
         {
             for (int i = 0; i < NUMBER_OF_SETS; i++)
             {
@@ -44,6 +44,12 @@ namespace DigitRecognitionConsole.Controller
         public int[] GetHiddenLayerSizes()
         {
             return new int[] { XOR_HIDDEN_SIZE, XOR_HIDDEN_SIZE };
+        }
+
+
+        public IEnumerable<DataItem> GetConditionalDataItems(Predicate<int> predicate)
+        {
+            throw new NotImplementedException();
         }
     }
 }

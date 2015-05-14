@@ -9,6 +9,8 @@ namespace DigitRecognitionConsole.Model
     [Serializable]
     public abstract class ActivatingNode : BaseNode
     {
+        private readonly double ERROR_MAXIMUM = 0.148148;
+        private readonly double Momentum = 0.5;
         public List<NetConnection> Inputs { get; set; }
 
         public ActivatingNode()
@@ -46,9 +48,11 @@ namespace DigitRecognitionConsole.Model
         {
             foreach (NetConnection nc in Inputs)
             {
-                nc.Weight = nc.Weight + (LEARNING_RATE * Error * nc.Sender.Activation);
+                //nc.Weight = nc.Weight + (LEARNING_RATE * Error * nc.Sender.Activation);// Original no momentum
+                //nc.Weight = nc.Weight + ((Math.Abs(Error / ERROR_MAXIMUM) * LEARNING_RATE) * Error * nc.Sender.Activation); //My attempt at momentum that uses the relative error as it's learning rate.
+                nc.Weight = nc.Weight + (LEARNING_RATE * Error * nc.Sender.Activation) + (Momentum * nc.PreviousChange);// adding a fraction of previous change
             }
-             this.Error = 0;
+            this.Error = 0;
         }
     }
 }

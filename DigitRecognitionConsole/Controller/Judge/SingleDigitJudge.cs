@@ -47,7 +47,12 @@ namespace DigitRecognitionConsole.Controller
 
         public Dictionary<int, AccuracyData> getEmptyAccuracyInfo()
         {
-            throw new NotImplementedException();
+            Dictionary<int, AccuracyData> _Accuracy = new Dictionary<int, AccuracyData>();
+            for (int i = 0; i < 10; i++)
+            {
+                _Accuracy[i] = new AccuracyData();
+            }
+            return _Accuracy;
         }
 
         private void TryValidParamters(OutputNode[] outputs)

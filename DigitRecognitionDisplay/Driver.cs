@@ -36,7 +36,7 @@ namespace DigitRecognitionDisplay
                     Index = 0;
                 }
                 double batchError = 0;
-                foreach (DataItem nextItem in provider.GetNextDataItem().Skip(Index).Take(epochSize))
+                foreach (DataItem nextItem in provider.GetDataItems().Skip(Index).Take(epochSize))
                 {
                     //StoredNetwork.Network.TrainNetwork(nextItem);
                     OutputNode[] networkResults = net.judgeInput(nextItem.data);
