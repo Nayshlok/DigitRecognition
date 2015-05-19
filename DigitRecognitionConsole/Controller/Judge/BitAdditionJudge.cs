@@ -65,5 +65,11 @@ namespace DigitRecognitionConsole.Controller
                 throw new Exception("Output size does not match this judge.");
             }
         }
+
+
+        public int JudgeNetwork(OutputNode[] outputs)
+        {
+            return NetworkValue(outputs);
+        }
     }
 }

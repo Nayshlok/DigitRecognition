@@ -37,12 +37,6 @@ namespace DigitRecognitionConsole.Controller
             }
         }
 
-
-        public void ResetTraining()
-        {
-
-        }
-
         public Dictionary<int, AccuracyData> getEmptyAccuracyInfo()
         {
             Dictionary<int, AccuracyData> _Accuracy = new Dictionary<int, AccuracyData>();
@@ -51,6 +45,12 @@ namespace DigitRecognitionConsole.Controller
                 _Accuracy[i] = new AccuracyData();
             }
             return _Accuracy;
+        }
+
+
+        public int JudgeNetwork(OutputNode[] outputs)
+        {
+            return outputs[0].Activation > ACTIVE_THRESHOLD ? 1 : 0;
         }
     }
 }

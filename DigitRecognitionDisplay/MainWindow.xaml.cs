@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using DigitRecognitionConsole.Controller;
 using DigitRecognitionConsole.Model;
+using DigitRecognitionConsole;
 using System.Windows.Threading;
 
 namespace DigitRecognitionDisplay
@@ -23,8 +24,8 @@ namespace DigitRecognitionDisplay
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly int NUMBER_OF_EPOCHS = 100;
-        private readonly int EPOCH_SIZE = 100;
+        private readonly int NUMBER_OF_EPOCHS = 200;
+        private readonly int EPOCH_SIZE = 50;
         private readonly int POINT_RADIUS = 4;
 
         private static double height;
@@ -32,7 +33,7 @@ namespace DigitRecognitionDisplay
 
         private DispatcherTimer timer;
         private Driver driver;
-        private double[] data;
+        private IEnumerator<double> data;
         private int currentIndex;
         private Ellipse prevPoint;
 
@@ -45,15 +46,15 @@ namespace DigitRecognitionDisplay
             timer = new DispatcherTimer();
             timer.Interval = new TimeSpan(10000);
             timer.Tick += OnTimedEvent;
-            IDataProvider provider = new BinaryXORProvider();
-            //IDataProvider provider = new DigitProvider(Program.TestingDataPath, Program.TestingLabelPath);
-            IJudge judge = new XORJudge();
+            //IDataProvider provider = new BinaryXORProvider();
+            IDataProvider provider = new DigitProvider(Program.TrainingDataPath, Program.TrainingLabelPath);
+            IJudge judge = new DigitJudge();
             driver = new Driver(provider, judge);
 
             height = MSEGraph.Height;
             EpochDistance = MSEGraph.Width / NUMBER_OF_EPOCHS;
 
-            data = driver.EpochTrain(EPOCH_SIZE, NUMBER_OF_EPOCHS).ToArray();
+            data = driver.EpochTrain(EPOCH_SIZE, NUMBER_OF_EPOCHS).GetEnumerator();
 
             timer.Start();
 
@@ -62,8 +63,9 @@ namespace DigitRecognitionDisplay
         public void OnTimedEvent(object source, EventArgs e)
         {
 
-            if(currentIndex < data.Length){
-                Ellipse point = PlotPoint(data[currentIndex], currentIndex);
+            if(currentIndex < NUMBER_OF_EPOCHS){
+                data.MoveNext();
+                Ellipse point = PlotPoint(data.Current, currentIndex);
                 if (prevPoint != null)
                 {
                     ConnectPoints(prevPoint, point);
@@ -74,8 +76,8 @@ namespace DigitRecognitionDisplay
             else
             {
                 Label totalAccuracy = new Label();
-                //IDataProvider testProvider = new DigitProvider(Program.TrainingDataPath, Program.TrainingLabelPath);
-                IDataProvider testProvider = new BinaryXORProvider();
+                IDataProvider testProvider = new DigitProvider(Program.TestingDataPath, Program.TestingLabelPath);
+                //IDataProvider testProvider = new BinaryXORProvider();
 
                 var testData = driver.TestNetwork(testProvider, 200);
                 totalAccuracy.Content = "Total Accuracy: " + driver.TotalAccuracy;
@@ -96,7 +98,7 @@ namespace DigitRecognitionDisplay
             point.Width = POINT_RADIUS;
             point.Height = POINT_RADIUS;
             point.Fill = new SolidColorBrush(Colors.DarkBlue);
-            double topValue = (MSE) * height;
+            double topValue = (1 -MSE) * height;
             Canvas.SetTop(point, topValue);
             Canvas.SetLeft(point, (Epoch * EpochDistance) + 25);
             MSEGraph.Children.Add(point);

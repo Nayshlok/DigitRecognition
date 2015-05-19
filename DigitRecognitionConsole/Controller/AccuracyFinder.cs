@@ -18,14 +18,14 @@ namespace DigitRecognitionConsole.Controller
             int CorrectCount = 0;
             Dictionary<int, AccuracyData> accuracyInfo = judge.getEmptyAccuracyInfo();
             int index = 0;
-            DigitJudge digitJudge = (DigitJudge)judge;
-            using (StreamWriter writer = new StreamWriter(@"..\..\Data\MissedCharacter.txt"))
+            IJudge digitJudge = (DigitJudge)judge;
+            using (StreamWriter writer = new StreamWriter(@"..\..\Data\MissedIndexes.txt"))
             {
                 foreach (DataItem item in provider.GetDataItems().Take(setSize))
                 {
                     OutputNode[] Result = net.judgeInput(item.data);
                     accuracyInfo[item.expectedResult].total++;
-                    if (digitJudge.JudgeNetwork(item, Result, writer))
+                    if (judge.JudgeNetwork(item, Result))
                     {
                         CorrectCount++;
                         accuracyInfo[item.expectedResult].correct++;

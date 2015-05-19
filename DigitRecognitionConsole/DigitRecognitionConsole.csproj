@@ -54,6 +54,7 @@
     <Compile Include="Controller\Provider\BitAdditionProvider.cs" />
     <Compile Include="Controller\Provider\DigitProvider.cs" />
     <Compile Include="Controller\Judge\DigitJudge.cs" />
+    <Compile Include="Controller\Provider\ErrorDigitProvider.cs" />
     <Compile Include="Controller\Provider\IDataProvider.cs" />
     <Compile Include="Controller\Judge\IJudge.cs" />
     <Compile Include="Controller\NetworkPersist.cs" />

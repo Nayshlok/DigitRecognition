@@ -77,5 +77,22 @@ namespace DigitRecognitionConsole.Controller
             }
             return _Accuracy;
         }
+
+
+        public int JudgeNetwork(OutputNode[] outputs)
+        {
+            TryValidParamters(outputs);
+            int MostActiveResult = -1;
+            double highestActivation = 0;
+            for (int i = 0; i < outputs.Length; i++)
+            {
+                if (outputs[i].Activation > highestActivation)
+                {
+                    MostActiveResult = i;
+                    highestActivation = outputs[i].Activation;
+                }
+            }
+            return MostActiveResult;
+        }
     }
 }

@@ -18,6 +18,7 @@ using System.IO;
 using System.Drawing.Imaging;
 using DigitRecognitionConsole.Model;
 using DigitRecognitionConsole.Controller;
+using System.Drawing.Drawing2D;
 
 namespace ImageInput
 {
@@ -28,9 +29,20 @@ namespace ImageInput
     {
         private Bitmap imageToGuess;
         private double[] data;
+        private PersistentNetwork StoredNetwork;
 
         public MainWindow()
         {
+            string FileName = @"HalfHiddenRate1Record";
+            string FilePath = @"..\..\..\DigitRecognitionConsole\Data\";
+            try
+            {
+                StoredNetwork = NetworkPersist.LoadNetwork(FileName, FilePath);
+            }
+            catch (FileNotFoundException)
+            {
+                throw new Exception("Bad Path");
+            }
             InitializeComponent();
         }
 
@@ -48,16 +60,32 @@ namespace ImageInput
                 //imageToGuess = new Bitmap(Fdlg.OpenFile());
                 imageToGuess = MakeGrayscale3(imageToGuess);
                 imageToGuess = new Bitmap(imageToGuess, 28, 28);
+
+                byte[] rawData = new byte[imageToGuess.Width * imageToGuess.Height];
+                System.Drawing.Rectangle rect = new System.Drawing.Rectangle(0, 0, imageToGuess.Width, imageToGuess.Height);
+
+                BitmapData bmData = imageToGuess.LockBits(rect, ImageLockMode.ReadWrite, imageToGuess.PixelFormat);
+                IntPtr ptr = bmData.Scan0;
+                int bytes = Math.Abs(bmData.Stride) * bmData.Height;
+                byte[] imageData = new byte[bytes];
+                System.Runtime.InteropServices.Marshal.Copy(ptr, imageData, 0, bytes);
+
+
+                for (int i = 1, j = 0; i < imageData.Length; i += 4, j++)
+                {
+                    rawData[j] = (byte)(255 - imageData[i]); //(byte)(imageData[i] < 240 ? 255 : 0);
+                }
+
+                imageToGuess.UnlockBits(bmData);
+
                 MemoryStream ms = new MemoryStream();
                 imageToGuess.Save(ms, ImageFormat.Jpeg);
                 ms.Position = 0;
                 int imageSize = imageToGuess.Height * imageToGuess.Width;
-                byte[] rawData = new byte[imageSize];
-                ms.Read(rawData, 0, imageSize);
-                ms.Position = 0;
 
-                data = rawData.Cast<double>().ToArray();
-
+                data = NormalizeByteData(rawData);
+                int test = TestImage();
+                NumberGuess.Content = test;
                 System.Windows.Controls.Image image = new System.Windows.Controls.Image();
                 BitmapImage bi = new BitmapImage();
                 bi.BeginInit();
@@ -74,25 +102,22 @@ namespace ImageInput
 
         private int TestImage()
         {
-            PersistentNetwork StoredNetwork = null;
-            string FileName = @"HalfHiddenRate1";
-            string FilePath = @"..\..\..\DigitRecognitionConsole\Data\";
-
             IJudge judge = new DigitJudge();
-            try
-            {
-                StoredNetwork = NetworkPersist.LoadNetwork(FileName, FilePath);
-            }
-            catch (FileNotFoundException)
-            {
-                throw new Exception("Bad Path");
-            }
-
-            StoredNetwork.Network.judgeInput(data);
-
-            return 0;
+            return judge.JudgeNetwork(StoredNetwork.Network.judgeInput(data));
         }
 
+        private double[] NormalizeByteData(byte[] rawData){
+            double[] normalizedData = new double[rawData.Length];
+            for (int i = 0; i < normalizedData.Length; i++)
+            {
+                normalizedData[i] = (double)rawData[i] / 255d;
+            }
+            return normalizedData;
+        }
+
+
+
+        //External Code. It works well for gray scaling an image.
         private Bitmap MakeGrayscale3(Bitmap original)
         {
             //create a blank bitmap the same size as original
@@ -126,6 +151,40 @@ namespace ImageInput
             //dispose the Graphics object
             g.Dispose();
             return newBitmap;
+        }
+
+        /// <summary>
+        /// Resize the image to the specified width and height.
+        /// </summary>
+        /// <param name="image">The image to resize.</param>
+        /// <param name="width">The width to resize to.</param>
+        /// <param name="height">The height to resize to.</param>
+        /// <returns>The resized image.</returns>
+        public static Bitmap ResizeImage(System.Drawing.Image image)
+        {
+            int width = 28;
+            int height = 28;
+            var destRect = new System.Drawing.Rectangle(0, 0, width - 8, height - 8);
+            var destImage = new Bitmap(width, height);
+
+            destImage.SetResolution(image.HorizontalResolution, image.VerticalResolution);
+
+            using (var graphics = Graphics.FromImage(destImage))
+            {
+                graphics.CompositingMode = CompositingMode.SourceCopy;
+                graphics.CompositingQuality = CompositingQuality.HighQuality;
+                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                graphics.SmoothingMode = SmoothingMode.HighQuality;
+                graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+                using (var wrapMode = new ImageAttributes())
+                {
+                    wrapMode.SetWrapMode(WrapMode.TileFlipXY);
+                    graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
+                }
+            }
+
+            return destImage;
         }
     }
 }

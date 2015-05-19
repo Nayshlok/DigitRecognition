@@ -12,5 +12,6 @@ namespace DigitRecognitionConsole.Controller
         bool JudgeNetwork(DataItem Item, OutputNode[] outputs);
         int[] TrainingResult(DataItem Item, OutputNode[] outputs);
         Dictionary<int, AccuracyData> getEmptyAccuracyInfo();
+        int JudgeNetwork(OutputNode[] outputs);
     }
 }

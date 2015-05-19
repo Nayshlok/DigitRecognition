@@ -7,7 +7,12 @@
             <RowDefinition/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <Button Name="ImageSelector" Click="ImageSelector_Click" Grid.Row="1">Select Image</Button>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Button Name="ImageSelector" Click="ImageSelector_Click" Grid.Row="1" Grid.ColumnSpan="2">Select Image</Button>
         <Canvas Name="ImageViewer" ></Canvas>
+        <Label Name="NumberGuess" Grid.Column="1"></Label>
     </Grid>
 </Window>

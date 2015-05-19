@@ -47,7 +47,7 @@ namespace DigitRecognitionDisplay
 
                 Index += epochSize;
 
-                MSE = batchError / (epochSize + provider.GetPossibleOutputs());
+                MSE = batchError / (2* (epochSize * provider.GetPossibleOutputs()));
 
                 yield return MSE;
             }

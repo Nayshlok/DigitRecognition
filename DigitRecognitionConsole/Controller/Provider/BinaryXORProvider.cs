@@ -43,7 +43,7 @@ namespace DigitRecognitionConsole.Controller
 
         public int[] GetHiddenLayerSizes()
         {
-            return new int[] { XOR_HIDDEN_SIZE, XOR_HIDDEN_SIZE };
+            return new int[] { XOR_HIDDEN_SIZE };
         }
 
 

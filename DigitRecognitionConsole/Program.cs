@@ -24,10 +24,10 @@ namespace DigitRecognitionConsole
 
             AccuracyFinder accuracy = new AccuracyFinder();
             IDataProvider provider = new DigitProvider(TrainingDataPath, TrainingLabelPath);
-            //IDataProvider provider = new BinaryXORProvider();
+            //IDataProvider provider = new BitAdditionProvider();
             IDataProvider TestProvider = new DigitProvider(TestingDataPath, TestingLabelPath);
-            IDataProvider TestProvider2 = new DigitProvider(TrainingDataPath, TrainingLabelPath);
-            //IDataProvider TestProvider = new BinaryXORProvider();
+            //IDataProvider TestProvider2 = new DigitProvider(TrainingDataPath, TrainingLabelPath);
+            //IDataProvider TestProvider = new BitAdditionProvider();
             IJudge judge = new DigitJudge();
 
             PersistentNetwork StoredNetwork = null;
@@ -42,8 +42,19 @@ namespace DigitRecognitionConsole
                 StoredNetwork = new PersistentNetwork { Index = 0, Network = new NeuralNet(judge, provider.GetNumOfInputs(), provider.GetHiddenLayerSizes(), provider.GetPossibleOutputs()) };
             }
 
+
             Console.WriteLine("Current index = " + StoredNetwork.Index);
-            PrintAccuracy(accuracy, accuracy.TestNetworkAccuracy(StoredNetwork.Network, TestProvider, judge, 100));
+            //PrintAccuracy(accuracy, accuracy.TestNetworkAccuracy(StoredNetwork.Network, TestProvider, judge, 100));
+            //using (StreamWriter writer = new StreamWriter(@"..\..\Data\" + FileName + "Record.txt", true))
+            //{
+            //    accuracy.TestNetworkAccuracy(StoredNetwork.Network, TestProvider, judge);
+            //    writer.WriteLine(-1 + ", " + accuracy.TotalAccuracy);
+            //    Console.WriteLine("standard test done");
+            //    //accuracy.TestNetworkAccuracy(StoredNetwork.Network, TestProvider2, judge, 10000);
+            //    //writer.WriteLine(", " + accuracy.TotalAccuracy);
+            //    //Console.WriteLine("Training test done");
+            //}
+
 
             NetworkPersist.SaveNetwork(StoredNetwork, FileName);
 
@@ -62,8 +73,7 @@ namespace DigitRecognitionConsole
             int batches = int.Parse(Console.ReadLine());
             //int batches = 1;
             //PrintAllWeights(StoredNetwork.Network);
-            using (StreamWriter writer = new StreamWriter(@"..\..\Data\OneSlowNetworkRecord.txt", true))
-            {
+
                 Stopwatch watch = new Stopwatch();
                 int endBatchSize = batchSize % provider.GetSetSize();
                 batches += batchSize / provider.GetSetSize();
@@ -86,27 +96,32 @@ namespace DigitRecognitionConsole
                     watch.Stop();
                     Console.WriteLine("Milliseconds to process: " + watch.ElapsedMilliseconds);
                     watch.Reset();
-
-                    accuracy.TestNetworkAccuracy(StoredNetwork.Network, TestProvider, judge);
-                    writer.Write(i + ", " + accuracy.TotalAccuracy);
-                    Console.WriteLine("standard test done");
-                    accuracy.TestNetworkAccuracy(StoredNetwork.Network, TestProvider2, judge, 10000);
-                    writer.WriteLine(", " + accuracy.TotalAccuracy);
+                    using (StreamWriter writer = new StreamWriter(@"..\..\Data\" + FileName + "Record.txt", true))
+                    {
+                        watch.Start();
+                        accuracy.TestNetworkAccuracy(StoredNetwork.Network, TestProvider, judge);
+                        writer.WriteLine(i + ", " + accuracy.TotalAccuracy);
+                        Console.WriteLine("standard test done");
+                        //accuracy.TestNetworkAccuracy(StoredNetwork.Network, TestProvider2, judge, 10000);
+                        //writer.WriteLine(", " + accuracy.TotalAccuracy);
+                        //Console.WriteLine("Training test done");
+                        watch.Stop();
+                        Console.WriteLine("Milliseconds to process test: " + watch.ElapsedMilliseconds);
+                        watch.Reset();
+                    }
                 }
+                Console.WriteLine("Test?");
+                string response = Console.ReadLine();
+                if (response == "y")
+                {
+                    watch.Reset();
+                    watch.Start();
+                    PrintAccuracy(accuracy, accuracy.TestNetworkAccuracy(StoredNetwork.Network, TestProvider, judge, 10000));
 
-                //Console.WriteLine("Test?");
-                //string response = Console.ReadLine();
-                //if (response == "y")
-                //{
-                //    watch.Reset();
-                //    watch.Start();
-                //    PrintAccuracy(accuracy, accuracy.TestNetworkAccuracy(StoredNetwork.Network, TestProvider, judge, 10000));
+                    watch.Stop();
+                    Console.WriteLine("Milliseconds to test: " + watch.ElapsedMilliseconds);
 
-                //    watch.Stop();
-                //    Console.WriteLine("Milliseconds to test: " + watch.ElapsedMilliseconds);
-
-                //}
-            }
+                }
             //PrintAllWeights(StoredNetwork.Network);
 
         }

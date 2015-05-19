@@ -165,7 +165,7 @@ namespace DigitRecognitionConsole.Controller
 
         public int[] GetHiddenLayerSizes()
         {
-            return new int[] { ImageSize/2};
+            return new int[] { 2*ImageSize};
         }
 
     }

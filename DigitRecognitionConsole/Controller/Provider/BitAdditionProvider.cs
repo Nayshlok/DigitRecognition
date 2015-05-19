@@ -42,7 +42,7 @@ namespace DigitRecognitionConsole.Controller
 
         public int[] GetHiddenLayerSizes()
         {
-            return new int[] {BIT_HIDDENSIZE, BIT_HIDDENSIZE};
+            return new int[] {10*BIT_HIDDENSIZE};
         }
 
 

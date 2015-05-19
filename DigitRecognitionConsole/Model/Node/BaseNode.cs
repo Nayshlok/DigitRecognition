@@ -9,13 +9,13 @@ namespace DigitRecognitionConsole.Model
     [Serializable]
     public abstract class BaseNode
     {
-        public static readonly double LEARNING_RATE = 0.01;
+        public static readonly double LEARNING_RATE = 0.5;
 
         public string Name { get; set; }
 
         public List<NetConnection> Outputs { get; set; }
         public double Activation { get; set; }
-        public double Error { get; set; }
+        public double Error { get; set; } 
 
         public BaseNode()
         {
