@@ -6,13 +6,17 @@
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition/>
+            <RowDefinition/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
             <ColumnDefinition/>
+            <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <Button Name="ImageSelector" Click="ImageSelector_Click" Grid.Row="1" Grid.ColumnSpan="2">Select Image</Button>
+        <Button Name="ImageSelector" Click="ImageSelector_Click" Grid.Row="2" Grid.Column="1" Margin="40">Select Image</Button>
         <Canvas Name="ImageViewer" ></Canvas>
-        <Label Name="NumberGuess" Grid.Column="1"></Label>
+        <Canvas Name="DrawnImage" Grid.Column="1"></Canvas>
+        <Label Name="NumberGuess" Grid.Column="2"></Label>
+        <StackPanel Name="ChanceView" Grid.Row="1" Grid.ColumnSpan="3"/>
     </Grid>
 </Window>

@@ -18,9 +18,9 @@ namespace DigitRecognitionConsole.Controller
             int CorrectCount = 0;
             Dictionary<int, AccuracyData> accuracyInfo = judge.getEmptyAccuracyInfo();
             int index = 0;
-            IJudge digitJudge = (DigitJudge)judge;
-            using (StreamWriter writer = new StreamWriter(@"..\..\Data\MissedIndexes.txt"))
-            {
+            //DigitJudge digitJudge = (DigitJudge)judge;
+            //using (StreamWriter writer = new StreamWriter(@"..\..\Data\MissedIndexes.txt"))
+            //{
                 foreach (DataItem item in provider.GetDataItems().Take(setSize))
                 {
                     OutputNode[] Result = net.judgeInput(item.data);
@@ -32,11 +32,11 @@ namespace DigitRecognitionConsole.Controller
                     }
                     else
                     {
-                        writer.Write(index + ", ");
+                        //writer.Write(index + ", ");
                     }
                     index++;
                 }
-            }
+            //}
             TotalAccuracy = (((double)CorrectCount) / ((double)setSize)) * 100;
             return accuracyInfo;
         }

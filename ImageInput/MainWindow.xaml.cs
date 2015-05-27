@@ -27,6 +27,7 @@ namespace ImageInput
     /// </summary>
     public partial class MainWindow : Window
     {
+        private readonly int PIXELSIZE = 1;
         private Bitmap imageToGuess;
         private double[] data;
         private PersistentNetwork StoredNetwork;
@@ -51,15 +52,12 @@ namespace ImageInput
             OpenFileDialog Fdlg = new OpenFileDialog();
             Fdlg.Filter = "Images|*.jpeg;*.png;*.jpg;*.gif";
             Fdlg.Title = "Character to guess";
-            Stream stream;
 
             if (Fdlg.ShowDialog() == true)
             {
-                stream = Fdlg.OpenFile();
-                imageToGuess = new Bitmap(stream);
-                //imageToGuess = new Bitmap(Fdlg.OpenFile());
-                imageToGuess = MakeGrayscale3(imageToGuess);
-                imageToGuess = new Bitmap(imageToGuess, 28, 28);
+                ImageProcessing imageProcessor = new ImageProcessing();
+                Bitmap originalImage = new Bitmap(Fdlg.OpenFile());
+                imageToGuess = imageProcessor.ProcessImage(originalImage);
 
                 byte[] rawData = new byte[imageToGuess.Width * imageToGuess.Height];
                 System.Drawing.Rectangle rect = new System.Drawing.Rectangle(0, 0, imageToGuess.Width, imageToGuess.Height);
@@ -81,8 +79,7 @@ namespace ImageInput
                 MemoryStream ms = new MemoryStream();
                 imageToGuess.Save(ms, ImageFormat.Jpeg);
                 ms.Position = 0;
-                int imageSize = imageToGuess.Height * imageToGuess.Width;
-
+                DrawImage(rawData, imageToGuess.Height, imageToGuess.Width);
                 data = NormalizeByteData(rawData);
                 int test = TestImage();
                 NumberGuess.Content = test;
@@ -94,11 +91,14 @@ namespace ImageInput
                 image.Source = bi;
                 Canvas.SetTop(image, 0);
                 Canvas.SetLeft(image, 0);
+                ImageViewer.Children.Clear();
                 ImageViewer.Children.Add(image);
 
                 //stream.Close();
             }
         }
+
+        
 
         private int TestImage()
         {
@@ -115,76 +115,38 @@ namespace ImageInput
             return normalizedData;
         }
 
-
-
-        //External Code. It works well for gray scaling an image.
-        private Bitmap MakeGrayscale3(Bitmap original)
+        public void DrawImage(byte[] data, int height, int width)
         {
-            //create a blank bitmap the same size as original
-            Bitmap newBitmap = new Bitmap(original.Width, original.Height);
-
-            //get a graphics object from the new image
-            Graphics g = Graphics.FromImage(newBitmap);
-
-            //create the grayscale ColorMatrix
-            ColorMatrix colorMatrix = new ColorMatrix(
-               new float[][] 
-                {
-                    new float[] {.3f, .3f, .3f, 0, 0},
-                    new float[] {.59f, .59f, .59f, 0, 0},
-                    new float[] {.11f, .11f, .11f, 0, 0},
-                    new float[] {0, 0, 0, 1, 0},
-                    new float[] {0, 0, 0, 0, 1}
-                });
-
-            //create some image attributes
-            ImageAttributes attributes = new ImageAttributes();
-
-            //set the color matrix attribute
-            attributes.SetColorMatrix(colorMatrix);
-
-            //draw the original image on the new image
-            //using the grayscale color matrix
-            g.DrawImage(original, new System.Drawing.Rectangle(0, 0, original.Width, original.Height),
-               0, 0, original.Width, original.Height, GraphicsUnit.Pixel, attributes);
-
-            //dispose the Graphics object
-            g.Dispose();
-            return newBitmap;
-        }
-
-        /// <summary>
-        /// Resize the image to the specified width and height.
-        /// </summary>
-        /// <param name="image">The image to resize.</param>
-        /// <param name="width">The width to resize to.</param>
-        /// <param name="height">The height to resize to.</param>
-        /// <returns>The resized image.</returns>
-        public static Bitmap ResizeImage(System.Drawing.Image image)
-        {
-            int width = 28;
-            int height = 28;
-            var destRect = new System.Drawing.Rectangle(0, 0, width - 8, height - 8);
-            var destImage = new Bitmap(width, height);
-
-            destImage.SetResolution(image.HorizontalResolution, image.VerticalResolution);
-
-            using (var graphics = Graphics.FromImage(destImage))
+            DrawnImage.Children.Clear();
+            for (int i = 0; i < height + 2; i++)
             {
-                graphics.CompositingMode = CompositingMode.SourceCopy;
-                graphics.CompositingQuality = CompositingQuality.HighQuality;
-                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                graphics.SmoothingMode = SmoothingMode.HighQuality;
-                graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
-
-                using (var wrapMode = new ImageAttributes())
+                for (int j = 0; j < width + 2; j++)
                 {
-                    wrapMode.SetWrapMode(WrapMode.TileFlipXY);
-                    graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
+                    if (i == 0 || i == height + 1)
+                    {
+                        DrawBox(DrawnImage, i, j, 255);
+                    }
+                    else if (j == 0 || j == width + 1)
+                    {
+                        DrawBox(DrawnImage, i, j, 255);
+                    }
+                    else
+                    {
+                        DrawBox(DrawnImage, i, j, data[((i - 1) * width) + j - 1]);
+                    }
                 }
             }
+        }
 
-            return destImage;
+        public void DrawBox(Canvas ImageCanvas, int y, int x, byte value)
+        {
+            System.Windows.Shapes.Rectangle singlePixel = new System.Windows.Shapes.Rectangle();
+            singlePixel.Width = PIXELSIZE;
+            singlePixel.Height = PIXELSIZE;
+            singlePixel.Fill = new SolidColorBrush(System.Windows.Media.Color.FromRgb((byte)(255 - value), (byte)(255 - value), (byte)(255 - value)));
+            Canvas.SetTop(singlePixel, y * PIXELSIZE);
+            Canvas.SetLeft(singlePixel, x * PIXELSIZE);
+            ImageCanvas.Children.Add(singlePixel);
         }
     }
 }

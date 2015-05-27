@@ -16,6 +16,7 @@ namespace DigitRecognitionConsole
         public static readonly string TrainingLabelPath = @"C:\Users\David Borland\Documents\Capstone\DigitRecognitionConsole\DigitRecognitionConsole\Data\train-labels.idx1-ubyte";
         public static readonly string TestingDataPath = @"C:\Users\David Borland\Documents\Capstone\DigitRecognitionConsole\DigitRecognitionConsole\Data\t10k-images.idx3-ubyte";
         public static readonly string TestingLabelPath = @"C:\Users\David Borland\Documents\Capstone\DigitRecognitionConsole\DigitRecognitionConsole\Data\t10k-labels.idx1-ubyte";
+        public static readonly string MissedIndexPath = @"..\..\Data\5_25_MissedIndexes.txt";
 
         static void Main(string[] args)
         {
@@ -23,9 +24,11 @@ namespace DigitRecognitionConsole
             //program.Run();
 
             AccuracyFinder accuracy = new AccuracyFinder();
-            IDataProvider provider = new DigitProvider(TrainingDataPath, TrainingLabelPath);
+            //IDataProvider provider = new DigitProvider(TrainingDataPath, TrainingLabelPath);
+            IDataProvider provider = new ErrorDigitProvider(TestingDataPath, TestingLabelPath, MissedIndexPath);
             //IDataProvider provider = new BitAdditionProvider();
             IDataProvider TestProvider = new DigitProvider(TestingDataPath, TestingLabelPath);
+            IDataProvider TestProvider2 = new ErrorDigitProvider(TestingDataPath, TestingLabelPath, MissedIndexPath);
             //IDataProvider TestProvider2 = new DigitProvider(TrainingDataPath, TrainingLabelPath);
             //IDataProvider TestProvider = new BitAdditionProvider();
             IJudge judge = new DigitJudge();
@@ -45,15 +48,15 @@ namespace DigitRecognitionConsole
 
             Console.WriteLine("Current index = " + StoredNetwork.Index);
             //PrintAccuracy(accuracy, accuracy.TestNetworkAccuracy(StoredNetwork.Network, TestProvider, judge, 100));
-            //using (StreamWriter writer = new StreamWriter(@"..\..\Data\" + FileName + "Record.txt", true))
-            //{
-            //    accuracy.TestNetworkAccuracy(StoredNetwork.Network, TestProvider, judge);
-            //    writer.WriteLine(-1 + ", " + accuracy.TotalAccuracy);
-            //    Console.WriteLine("standard test done");
-            //    //accuracy.TestNetworkAccuracy(StoredNetwork.Network, TestProvider2, judge, 10000);
-            //    //writer.WriteLine(", " + accuracy.TotalAccuracy);
-            //    //Console.WriteLine("Training test done");
-            //}
+            using (StreamWriter writer = new StreamWriter(@"..\..\Data\" + FileName + "Record.txt", true))
+            {
+                accuracy.TestNetworkAccuracy(StoredNetwork.Network, TestProvider, judge);
+                writer.Write(-1 + ", " + accuracy.TotalAccuracy);
+                Console.WriteLine("standard test done");
+                accuracy.TestNetworkAccuracy(StoredNetwork.Network, TestProvider2, judge);
+                writer.WriteLine(", " + accuracy.TotalAccuracy);
+                Console.WriteLine("Training test done");
+            }
 
 
             NetworkPersist.SaveNetwork(StoredNetwork, FileName);
@@ -71,27 +74,36 @@ namespace DigitRecognitionConsole
             int batchSize = int.Parse(Console.ReadLine());
             Console.WriteLine("Enter number of batches");
             int batches = int.Parse(Console.ReadLine());
-            //int batches = 1;
-            //PrintAllWeights(StoredNetwork.Network);
 
-                Stopwatch watch = new Stopwatch();
-                int endBatchSize = batchSize % provider.GetSetSize();
-                batches += batchSize / provider.GetSetSize();
-
+            Stopwatch watch = new Stopwatch();
+            
                 for (int i = 0; i < batches; i++)
                 {
                     watch.Start();
-                    if (StoredNetwork.Index >= provider.GetSetSize())
+                    int innerBatches = batchSize / provider.GetSetSize();
+                    int endBatchSize = batchSize % provider.GetSetSize();
+                    int partialSize = 0;
+                    for (int j = 0; j < innerBatches + 1; j++)
                     {
-                        StoredNetwork.Index = 0;
-                    }
-                    foreach (DataItem nextItem in provider.GetDataItems().Skip(StoredNetwork.Index).Take(i == batches - 1 ? endBatchSize : batchSize))
-                    {
-                        StoredNetwork.Network.TrainNetwork(nextItem);
+                        int currentBatchSize = (j == innerBatches ? endBatchSize : provider.GetSetSize()) - partialSize;
+                        if (StoredNetwork.Index + currentBatchSize > provider.GetSetSize())
+                        {
+                            partialSize = currentBatchSize - (provider.GetSetSize() - StoredNetwork.Index);
+                            currentBatchSize = partialSize;
+                            StoredNetwork.Index = 0;
+                            j--;
+                        }
+                        else
+                        {
+                            partialSize = 0;
+                            StoredNetwork.Index += currentBatchSize;
+                        }
+                        foreach (DataItem nextItem in provider.GetDataItems().Skip(StoredNetwork.Index).Take(currentBatchSize))
+                        {
+                            StoredNetwork.Network.TrainNetwork(nextItem);
+                        }
                     }
                     //StoredNetwork.Network.BatchTrainNetwork(provider.GetNextDataItem().Skip(StoredNetwork.Index).Take(batchSize));
-
-                    StoredNetwork.Index += batchSize;
                     NetworkPersist.SaveNetwork(StoredNetwork, FileName);
                     watch.Stop();
                     Console.WriteLine("Milliseconds to process: " + watch.ElapsedMilliseconds);
@@ -100,11 +112,11 @@ namespace DigitRecognitionConsole
                     {
                         watch.Start();
                         accuracy.TestNetworkAccuracy(StoredNetwork.Network, TestProvider, judge);
-                        writer.WriteLine(i + ", " + accuracy.TotalAccuracy);
+                        writer.Write(i + ", " + accuracy.TotalAccuracy);
                         Console.WriteLine("standard test done");
-                        //accuracy.TestNetworkAccuracy(StoredNetwork.Network, TestProvider2, judge, 10000);
-                        //writer.WriteLine(", " + accuracy.TotalAccuracy);
-                        //Console.WriteLine("Training test done");
+                        accuracy.TestNetworkAccuracy(StoredNetwork.Network, TestProvider2, judge);
+                        writer.WriteLine(", " + accuracy.TotalAccuracy);
+                        Console.WriteLine("Training test done");
                         watch.Stop();
                         Console.WriteLine("Milliseconds to process test: " + watch.ElapsedMilliseconds);
                         watch.Reset();
