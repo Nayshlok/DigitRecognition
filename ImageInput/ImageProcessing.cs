@@ -11,6 +11,7 @@ namespace ImageInput
 {
     class ImageProcessing
     {
+        private Bitmap StoredSmallImage;
 
         public Bitmap ProcessImage(Bitmap original)
         {
@@ -18,6 +19,7 @@ namespace ImageInput
             Rectangle BoundImage = BoundingRectangle(GrayScaledImage);
             Bitmap croppedImage = original.Clone(BoundImage, original.PixelFormat);
             Bitmap smallImage = ResizeImage(croppedImage, (croppedImage.Width > 20 ? 20 : croppedImage.Width), croppedImage.Height > 20 ? 20 : croppedImage.Height);
+            StoredSmallImage = smallImage;
             //Bitmap smallImage = new Bitmap(croppedImage, 20, 20);
             Bitmap finalImage = new Bitmap(28, 28);
             Point center = CenterOfMass(smallImage);
@@ -32,11 +34,27 @@ namespace ImageInput
             using (Graphics g = Graphics.FromImage(finalImage))
             {
                 g.FillRectangle(new SolidBrush(Color.White), 0, 0, finalImage.Width, finalImage.Height);
-                Rectangle destRect = new Rectangle((finalImage.Width / 2) - center.X, (finalImage.Height / 2) - center.Y, smallImage.Width, smallImage.Height);
+                Rectangle destRect = new Rectangle((finalImage.Width / 2) - (smallImage.Width/2), (finalImage.Height / 2) - center.Y, smallImage.Width, smallImage.Height);
                 g.DrawImage(smallImage, destRect, 0, 0, smallImage.Width, smallImage.Height, GraphicsUnit.Pixel);
             }
 
             return finalImage;
+        }
+
+        public Bitmap offsetImage(int x, int y)
+        {
+            if (StoredSmallImage == null)
+            {
+                throw new Exception();
+            }
+            Bitmap transposedImage = new Bitmap(28, 28);
+            using (Graphics g = Graphics.FromImage(transposedImage))
+            {
+                g.FillRectangle(new SolidBrush(Color.White), 0, 0, transposedImage.Width, transposedImage.Height);
+                Rectangle destRect = new Rectangle((transposedImage.Width / 2) - x, (transposedImage.Height / 2) - y, StoredSmallImage.Width, StoredSmallImage.Height);
+                g.DrawImage(StoredSmallImage, destRect, 0, 0, StoredSmallImage.Width, StoredSmallImage.Height, GraphicsUnit.Pixel);
+            }
+            return transposedImage;
         }
 
         private byte[] GetImageData(Bitmap image)

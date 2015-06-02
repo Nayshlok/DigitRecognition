@@ -120,7 +120,6 @@ namespace DigitRecognitionConsole.Controller
             {
                 int[] shouldActivate = judge.TrainingResult(Item, this.judgeInput(Item.data));
 
-
                 for(int i = 0; i < outputNodes.Length; i++)
                 {
                     outputNodes[i].CalculateError(shouldActivate[i]);
