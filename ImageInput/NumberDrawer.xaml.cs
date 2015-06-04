@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing.Imaging;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -25,7 +27,7 @@ namespace ImageInput
             InitializeComponent();
         }
 
-        private readonly int pixelSize = 1;
+        private readonly int pixelSize = 2;
         private Dictionary<Point, ColoredBox> canvasPoints = new Dictionary<Point,ColoredBox>();
 
         public void drawAtPoint(Point p)
@@ -48,6 +50,40 @@ namespace ImageInput
                 colorAtPoint(new Point(p.X + 1, p.Y), false);
             }
         }
+
+        public System.Drawing.Bitmap getBitmapFromDrawing()
+        {
+            int width = (int)DigitCanvas.Width/pixelSize;
+            int height = (int)DigitCanvas.Height / pixelSize;
+            var b = new System.Drawing.Bitmap((int)DigitCanvas.Width/pixelSize, (int)DigitCanvas.Height/pixelSize, System.Drawing.Imaging.PixelFormat.Format8bppIndexed);
+
+            ColorPalette ncp = b.Palette;
+            for (int i = 0; i < 256; i++)
+                ncp.Entries[i] = System.Drawing.Color.FromArgb(255, i, i, i);
+            b.Palette = ncp;
+
+            var BoundsRect = new System.Drawing.Rectangle(0, 0, (int)DigitCanvas.Width/pixelSize, (int)DigitCanvas.Height/pixelSize);
+            BitmapData bmpData = b.LockBits(BoundsRect,
+                                            ImageLockMode.WriteOnly,
+                                            b.PixelFormat);
+
+            IntPtr ptr = bmpData.Scan0;
+
+            int bytes = bmpData.Stride*b.Height;
+            var rgbValues = new byte[bytes];
+
+            for (int i = 0; i < rgbValues.Length; i++)
+            {
+                int x = i % (b.Width/pixelSize);
+                int y = i / (b.Width/pixelSize);
+                ColoredBox selected;
+                rgbValues[i] = canvasPoints.TryGetValue(new Point(x, y), out selected) ? selected.color.B : (byte)255;
+            }
+
+            Marshal.Copy(rgbValues, 0, ptr, bytes);
+            b.UnlockBits(bmpData);
+            return b;
+        } 
 
         public void colorAtPoint(Point p, bool primary)
         {

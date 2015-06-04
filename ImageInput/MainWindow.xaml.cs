@@ -32,22 +32,23 @@ namespace ImageInput
         private double[] data;
         private PersistentNetwork StoredNetwork;
         private ImageProcessing imageProcessor = new ImageProcessing();
+        NumberDrawer drawer;
 
 
         public MainWindow()
         {
             string FileName = @"HalfHiddenRate1Record";
             string FilePath = @"..\..\..\DigitRecognitionConsole\Data\";
-            try
-            {
-                StoredNetwork = NetworkPersist.LoadNetwork(FileName, FilePath);
-            }
-            catch (FileNotFoundException)
-            {
-                throw new Exception("Bad Path");
-            }
+            //try
+            //{
+            //    StoredNetwork = NetworkPersist.LoadNetwork(FileName, FilePath);
+            //}
+            //catch (FileNotFoundException)
+            //{
+            //    throw new Exception("Bad Path");
+            //}
             InitializeComponent();
-            NumberDrawer drawer = new NumberDrawer();
+            drawer = new NumberDrawer();
             Grid.SetRow(drawer, 2);
             Grid.SetColumn(drawer, 2);
             MainGrid.Children.Add(drawer);
@@ -62,56 +63,63 @@ namespace ImageInput
             if (Fdlg.ShowDialog() == true)
             {
                 Bitmap originalImage = new Bitmap(Fdlg.OpenFile());
-                imageToGuess = imageProcessor.ProcessImage(originalImage);
-
-                byte[] rawData = new byte[imageToGuess.Width * imageToGuess.Height];
-                System.Drawing.Rectangle rect = new System.Drawing.Rectangle(0, 0, imageToGuess.Width, imageToGuess.Height);
-
-                BitmapData bmData = imageToGuess.LockBits(rect, ImageLockMode.ReadWrite, imageToGuess.PixelFormat);
-                IntPtr ptr = bmData.Scan0;
-                int bytes = Math.Abs(bmData.Stride) * bmData.Height;
-                byte[] imageData = new byte[bytes];
-                System.Runtime.InteropServices.Marshal.Copy(ptr, imageData, 0, bytes);
-
-
-                for (int i = 1, j = 0; i < imageData.Length; i += 4, j++)
-                {
-                    rawData[j] = (byte)(255 - imageData[i]); //(byte)(imageData[i] < 240 ? 255 : 0);
-                }
-
-                imageToGuess.UnlockBits(bmData);
-
-                MemoryStream ms = new MemoryStream();
-                imageToGuess.Save(ms, ImageFormat.Jpeg);
-                ms.Position = 0;
-                DrawImage(rawData, imageToGuess.Height, imageToGuess.Width);
-                data = NormalizeByteData(rawData);
-                int test = TestImage();
-                NumberGuess.Content = test;
-                ChanceView.Children.Clear();
-                for (int i = 0; i < StoredNetwork.Network.outputNodes.Length; i++)
-                {
-                    Label guess = new Label();
-                    guess.Content = i + ": " + Math.Round((StoredNetwork.Network.outputNodes[i].Activation * 100), 4);
-                    ChanceView.Children.Add(guess);
-                }
-
-                System.Windows.Controls.Image image = new System.Windows.Controls.Image();
-                BitmapImage bi = new BitmapImage();
-                bi.BeginInit();
-                bi.StreamSource = ms;
-                bi.EndInit();
-                image.Source = bi;
-                Canvas.SetTop(image, 0);
-                Canvas.SetLeft(image, 0);
-                ImageViewer.Children.Clear();
-                ImageViewer.Children.Add(image);
-
-                //stream.Close();
+                DisplayAndTestImage(originalImage);
             }
         }
 
-        
+        private void CanvasSelector_Click(object sender, RoutedEventArgs e)
+        {
+            Bitmap original = drawer.getBitmapFromDrawing();
+            DisplayAndTestImage(original);
+        }
+
+        private void DisplayAndTestImage(Bitmap originalImage)
+        {
+            imageToGuess = imageProcessor.ProcessImage(originalImage);
+
+            byte[] rawData = new byte[imageToGuess.Width * imageToGuess.Height];
+            System.Drawing.Rectangle rect = new System.Drawing.Rectangle(0, 0, imageToGuess.Width, imageToGuess.Height);
+
+            BitmapData bmData = imageToGuess.LockBits(rect, ImageLockMode.ReadWrite, imageToGuess.PixelFormat);
+            IntPtr ptr = bmData.Scan0;
+            int bytes = Math.Abs(bmData.Stride) * bmData.Height;
+            byte[] imageData = new byte[bytes];
+            System.Runtime.InteropServices.Marshal.Copy(ptr, imageData, 0, bytes);
+
+
+            for (int i = 1, j = 0; i < imageData.Length; i += 4, j++)
+            {
+                rawData[j] = (byte)(255 - imageData[i]); //(byte)(imageData[i] < 240 ? 255 : 0);
+            }
+
+            imageToGuess.UnlockBits(bmData);
+
+            MemoryStream ms = new MemoryStream();
+            originalImage.Save(ms, ImageFormat.Jpeg);
+            ms.Position = 0;
+            DrawImage(rawData, imageToGuess.Height, imageToGuess.Width);
+            data = NormalizeByteData(rawData);
+            //int test = TestImage();
+            //NumberGuess.Content = test;
+            //ChanceView.Children.Clear();
+            //for (int i = 0; i < StoredNetwork.Network.outputNodes.Length; i++)
+            //{
+            //    Label guess = new Label();
+            //    guess.Content = i + ": " + Math.Round((StoredNetwork.Network.outputNodes[i].Activation * 100), 4);
+            //    ChanceView.Children.Add(guess);
+            //}
+
+            System.Windows.Controls.Image image = new System.Windows.Controls.Image();
+            BitmapImage bi = new BitmapImage();
+            bi.BeginInit();
+            bi.StreamSource = ms;
+            bi.EndInit();
+            image.Source = bi;
+            Canvas.SetTop(image, 0);
+            Canvas.SetLeft(image, 0);
+            ImageViewer.Children.Clear();
+            ImageViewer.Children.Add(image);
+        }
 
         private int TestImage()
         {
@@ -212,5 +220,6 @@ namespace ImageInput
             ImageViewer.Children.Clear();
             ImageViewer.Children.Add(image);
         }
+
     }
 }

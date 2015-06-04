@@ -13,7 +13,10 @@
             <ColumnDefinition/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <Button Name="ImageSelector" Click="ImageSelector_Click" Grid.Row="2" Grid.Column="1" Margin="40">Select Image</Button>
+        <StackPanel Grid.Column="1" Grid.Row="2">
+            <Button Name="ImageSelector" Click="ImageSelector_Click" Margin="20">Select Image</Button>
+            <Button Name="CanvasSelector" Click="CanvasSelector_Click" Margin="20, 0, 20, 0">Select from Drawing</Button>
+        </StackPanel>
         <Canvas Name="ImageViewer" ></Canvas>
         <Canvas Name="DrawnImage" Grid.Column="1"></Canvas>
         <Label Name="NumberGuess" Grid.Column="2"></Label>

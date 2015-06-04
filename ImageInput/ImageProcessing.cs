@@ -93,8 +93,13 @@ namespace ImageInput
         {
             byte[] imageData = GetImageData(image);
             int bytesPerPixel = Image.GetPixelFormatSize(image.PixelFormat) / 8;
-            int rectX = image.Width;
-            int rectY = image.Height;
+            return BoundingRectangle(imageData, image.Height, image.Width, bytesPerPixel);
+        }
+
+        private Rectangle BoundingRectangle(byte[] imageData, int height, int width, int bytesPerPixel)
+        {
+            int rectX = width;
+            int rectY = height;
             int rectWidth = 0;
             int rectHeight = 0;
             int farRight = 0;
@@ -104,8 +109,8 @@ namespace ImageInput
             {
                 if (imageData[i] < 250)
                 {
-                    int x = (i / bytesPerPixel) % image.Width;
-                    int y = (i / bytesPerPixel) / image.Width;
+                    int x = (i / bytesPerPixel) % width;
+                    int y = (i / bytesPerPixel) / width;
                     if (x > farRight)
                     {
                         farRight = x;
