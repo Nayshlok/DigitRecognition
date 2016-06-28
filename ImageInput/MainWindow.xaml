@@ -14,8 +14,9 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <StackPanel Grid.Column="1" Grid.Row="2">
-            <Button Name="ImageSelector" Click="ImageSelector_Click" Margin="20">Select Image</Button>
+            <Button Name="ImageSelector" Click="ImageSelector_Click" Margin="20, 10, 20, 10">Select Image</Button>
             <Button Name="CanvasSelector" Click="CanvasSelector_Click" Margin="20, 0, 20, 0">Select from Drawing</Button>
+            <Button Name="ClearCanvas" Click="ClearCanvas_Click" Margin="20, 10, 20, 10">Clear Drawing</Button>
         </StackPanel>
         <Canvas Name="ImageViewer" ></Canvas>
         <Canvas Name="DrawnImage" Grid.Column="1"></Canvas>

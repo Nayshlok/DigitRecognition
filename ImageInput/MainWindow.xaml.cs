@@ -39,14 +39,14 @@ namespace ImageInput
         {
             string FileName = @"HalfHiddenRate1Record";
             string FilePath = @"..\..\..\DigitRecognitionConsole\Data\";
-            //try
-            //{
-            //    StoredNetwork = NetworkPersist.LoadNetwork(FileName, FilePath);
-            //}
-            //catch (FileNotFoundException)
-            //{
-            //    throw new Exception("Bad Path");
-            //}
+            try
+            {
+                StoredNetwork = NetworkPersist.LoadNetwork(FileName, FilePath);
+            }
+            catch (FileNotFoundException)
+            {
+                throw new Exception("Bad Path");
+            }
             InitializeComponent();
             drawer = new NumberDrawer();
             Grid.SetRow(drawer, 2);
@@ -69,7 +69,9 @@ namespace ImageInput
 
         private void CanvasSelector_Click(object sender, RoutedEventArgs e)
         {
-            Bitmap original = drawer.getBitmapFromDrawing();
+            int width = (int)MainGrid.ActualWidth / MainGrid.ColumnDefinitions.Count;
+            int height = (int)MainGrid.ActualHeight / MainGrid.RowDefinitions.Count;
+            Bitmap original = drawer.getBitmapFromDrawing(width, height);
             DisplayAndTestImage(original);
         }
 
@@ -99,15 +101,15 @@ namespace ImageInput
             ms.Position = 0;
             DrawImage(rawData, imageToGuess.Height, imageToGuess.Width);
             data = NormalizeByteData(rawData);
-            //int test = TestImage();
-            //NumberGuess.Content = test;
-            //ChanceView.Children.Clear();
-            //for (int i = 0; i < StoredNetwork.Network.outputNodes.Length; i++)
-            //{
-            //    Label guess = new Label();
-            //    guess.Content = i + ": " + Math.Round((StoredNetwork.Network.outputNodes[i].Activation * 100), 4);
-            //    ChanceView.Children.Add(guess);
-            //}
+            int test = TestImage();
+            NumberGuess.Content = test;
+            ChanceView.Children.Clear();
+            for (int i = 0; i < StoredNetwork.Network.outputNodes.Length; i++)
+            {
+                Label guess = new Label();
+                guess.Content = i + ": " + Math.Round((StoredNetwork.Network.outputNodes[i].Activation * 100), 4);
+                ChanceView.Children.Add(guess);
+            }
 
             System.Windows.Controls.Image image = new System.Windows.Controls.Image();
             BitmapImage bi = new BitmapImage();
@@ -219,6 +221,11 @@ namespace ImageInput
             Canvas.SetLeft(image, 0);
             ImageViewer.Children.Clear();
             ImageViewer.Children.Add(image);
+        }
+
+        private void ClearCanvas_Click(object sender, RoutedEventArgs e)
+        {
+            drawer.ClearCanvas();
         }
 
     }

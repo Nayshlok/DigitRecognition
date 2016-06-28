@@ -10,7 +10,6 @@ namespace DigitRecognitionConsole.Controller
     [Serializable]
     public class BitAdditionJudge : IJudge
     {
-        private readonly int OUTPUT_SIZE = 3;
         private readonly double ACTIVE_THRESHOLD = 0.75;
 
         public bool JudgeNetwork(DataItem Item, OutputNode[] outputs)
@@ -36,7 +35,7 @@ namespace DigitRecognitionConsole.Controller
         public Dictionary<int, AccuracyData> getEmptyAccuracyInfo()
         {
             Dictionary<int, AccuracyData> _Accuracy = new Dictionary<int, AccuracyData>();
-            for (int i = 0; i < 7; i++)
+            for (int i = 0; i < Math.Pow(2, BitAdditionProvider.BIT_OUTPUTS);i++)
             {
                 _Accuracy[i] = new AccuracyData();
             }
@@ -60,7 +59,7 @@ namespace DigitRecognitionConsole.Controller
 
         private void TryValidParamters(OutputNode[] outputs)
         {
-            if (outputs.Length != OUTPUT_SIZE)
+            if (outputs.Length != BitAdditionProvider.BIT_OUTPUTS)
             {
                 throw new Exception("Output size does not match this judge.");
             }

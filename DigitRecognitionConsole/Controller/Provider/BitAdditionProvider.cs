@@ -9,9 +9,10 @@ namespace DigitRecognitionConsole.Controller
 {
     public class BitAdditionProvider : IDataProvider
     {
-        private readonly int BIT_OUTPUTS = 3;
-        private readonly int BIT_HIDDENSIZE = 12;
-        private readonly int BIT_INPUTS = 4;
+        public static readonly int BIT_OUTPUTS = 5;
+        private readonly int BIT_HIDDENSIZE = 15;
+        private readonly int BIT_INPUTS = 8;
+        private readonly int NUMBER_SIZE = 4;
         private static Random rand = new Random();
         private readonly int NUMBER_OF_SETS = 100000;
 
@@ -29,8 +30,14 @@ namespace DigitRecognitionConsole.Controller
         {
             for (int i = 0; i < NUMBER_OF_SETS; i++)
             {
-                double[] data = new double[] { rand.Next(2), rand.Next(2), rand.Next(2), rand.Next(2) };
-                int expected = (int)((data[0] * 2 + data[1]) + (data[2] * 2 + data[3]));
+                double[] data = new double[BIT_INPUTS];
+                int expected = 0;
+                for (int j = 0; j < data.Length; j++)
+                {
+                    int bit = rand.Next(2);
+                    data[j] = bit;
+                    expected +=(int)( bit * Math.Pow(2, NUMBER_SIZE - 1 - (j % NUMBER_SIZE)));
+                }
                 yield return new DataItem { data = data, expectedResult = expected };
             }
         }

@@ -25,13 +25,13 @@ namespace DigitRecognitionConsole
 
             AccuracyFinder accuracy = new AccuracyFinder();
             //IDataProvider provider = new DigitProvider(TrainingDataPath, TrainingLabelPath);
-            IDataProvider provider = new ErrorDigitProvider(TestingDataPath, TestingLabelPath, MissedIndexPath);
-            //IDataProvider provider = new BitAdditionProvider();
-            IDataProvider TestProvider = new DigitProvider(TestingDataPath, TestingLabelPath);
-            IDataProvider TestProvider2 = new ErrorDigitProvider(TestingDataPath, TestingLabelPath, MissedIndexPath);
+            //IDataProvider provider = new ErrorDigitProvider(TestingDataPath, TestingLabelPath, MissedIndexPath);
+            IDataProvider provider = new BitAdditionProvider();
+            //IDataProvider TestProvider = new DigitProvider(TestingDataPath, TestingLabelPath);
+            //IDataProvider TestProvider2 = new ErrorDigitProvider(TestingDataPath, TestingLabelPath, MissedIndexPath);
             //IDataProvider TestProvider2 = new DigitProvider(TrainingDataPath, TrainingLabelPath);
-            //IDataProvider TestProvider = new BitAdditionProvider();
-            IJudge judge = new DigitJudge();
+            IDataProvider TestProvider = new BitAdditionProvider();
+            IJudge judge = new BitAdditionJudge();
 
             PersistentNetwork StoredNetwork = null;
             Console.WriteLine("Enter File Name:");
@@ -48,18 +48,18 @@ namespace DigitRecognitionConsole
 
             Console.WriteLine("Current index = " + StoredNetwork.Index);
             //PrintAccuracy(accuracy, accuracy.TestNetworkAccuracy(StoredNetwork.Network, TestProvider, judge, 100));
-            using (StreamWriter writer = new StreamWriter(@"..\..\Data\" + FileName + "Record.txt", true))
-            {
-                accuracy.TestNetworkAccuracy(StoredNetwork.Network, TestProvider, judge);
-                writer.Write(-1 + ", " + accuracy.TotalAccuracy);
-                Console.WriteLine("standard test done");
-                accuracy.TestNetworkAccuracy(StoredNetwork.Network, TestProvider2, judge);
-                writer.WriteLine(", " + accuracy.TotalAccuracy);
-                Console.WriteLine("Training test done");
-            }
+            //using (StreamWriter writer = new StreamWriter(@"..\..\Data\" + FileName + "Record.txt", true))
+            //{
+            //    accuracy.TestNetworkAccuracy(StoredNetwork.Network, TestProvider, judge);
+            //    writer.Write(-1 + ", " + accuracy.TotalAccuracy);
+            //    Console.WriteLine("standard test done");
+            //    //accuracy.TestNetworkAccuracy(StoredNetwork.Network, TestProvider2, judge);
+            //    //writer.WriteLine(", " + accuracy.TotalAccuracy);
+            //    //Console.WriteLine("Training test done");
+            //}
 
 
-            NetworkPersist.SaveNetwork(StoredNetwork, FileName);
+            //NetworkPersist.SaveNetwork(StoredNetwork, FileName);
 
             //for (int i = 0; i < 10; i++)
             //{
@@ -114,9 +114,9 @@ namespace DigitRecognitionConsole
                         accuracy.TestNetworkAccuracy(StoredNetwork.Network, TestProvider, judge);
                         writer.Write(i + ", " + accuracy.TotalAccuracy);
                         Console.WriteLine("standard test done");
-                        accuracy.TestNetworkAccuracy(StoredNetwork.Network, TestProvider2, judge);
-                        writer.WriteLine(", " + accuracy.TotalAccuracy);
-                        Console.WriteLine("Training test done");
+                        //accuracy.TestNetworkAccuracy(StoredNetwork.Network, TestProvider2, judge);
+                        //writer.WriteLine(", " + accuracy.TotalAccuracy);
+                        //Console.WriteLine("Training test done");
                         watch.Stop();
                         Console.WriteLine("Milliseconds to process test: " + watch.ElapsedMilliseconds);
                         watch.Reset();
